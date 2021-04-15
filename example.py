@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 import libCommand, argparse, datetime
 parser = argparse.ArgumentParser(description="run some tool")
-parser.add_argument("target", help="target file (tsv)", type=str)
 parser.add_argument("-s", "--script", help="export commands as script",action="store_true")
 args = parser.parse_args()
 
@@ -11,6 +10,7 @@ Tool = libCommand.timer()
 # prefix-20210201-error.log
 Tool.logFilenameStr = 'prefix-{}'.format(datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8),name="UTC+8")).strftime("%Y%m%d"))
 Tool.folderStr = "log/"
+Tool.testingBool = False
 if args.script:
     Tool.testingBool = True
 Tool.startLog()
