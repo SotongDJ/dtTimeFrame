@@ -1,2 +1,3 @@
-# pyWorkFlow
-WorkFlow is a framework to package some basic function into python class
+# pyTimeTag
+
+timeTag is a module to give time track and pack subprocess call function into one single class.
