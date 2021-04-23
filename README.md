@@ -1,3 +1,3 @@
 # pyTimeTag
 
-timeTag is a module to give time track and pack subprocess call function into one single class.
+timeTag is a module that pack time track subprocess call function into one single class.
