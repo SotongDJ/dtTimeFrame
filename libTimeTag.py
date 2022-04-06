@@ -35,9 +35,6 @@ class tag():
         self.printPhrase()
         self.printDashLine()
 
-        self.current_time_str = ""
-        self.phrase_str = ""
-
     def printTimeStamp(self):
         pathStr = "{}{}.log".format(
             self.log_path_str,self.log_name_str
@@ -196,6 +193,3 @@ class tag():
             totalTimeStr
         )
         self.printPhrase()
-
-        self.phrase_str = ""
-        self.current_time_str = ""
