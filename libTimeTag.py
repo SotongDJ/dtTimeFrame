@@ -39,9 +39,9 @@ class tag():
 
         self.current_time_str = time.strftime("%Y%m%d%H%M%S")
         timeMsgStr = "[{}] {}".format(self.convertTime(),self.phrase_str)
-        print( timeMsgStr )
+        print(timeMsgStr)
         with open(pathStr,'a') as logFileHandle:
-            logFileHandle.write( timeMsgStr+"\n" )
+            logFileHandle.write(timeMsgStr+"\n")
         
         self.current_time_str = ""
         self.phrase_str = ""
@@ -56,19 +56,19 @@ class tag():
             errorStr = F"/tmp/{self.log_name_str}-error.log"
         self.current_time_str = time.strftime("%Y%m%d%H%M%S")
         timeMsgStr = "[{}] Run command: {}".format(self.convertTime(),self.phrase_str)
-        print( timeMsgStr )
+        print(timeMsgStr)
         with open(pathStr,'a') as logFileHandle:
-            logFileHandle.write( timeMsgStr + "\n" )
+            logFileHandle.write(timeMsgStr+"\n")
         
         with open(errorStr,'a') as logFileHandle:
-            logFileHandle.write( timeMsgStr + "\n" )
+            logFileHandle.write(timeMsgStr+"\n")
         
         commandList = self.phrase_str.split(" ")
         if "" in commandList:
             errorMsgStr = "\n[libCommand ERROR MSG] \"\" in command line\n"
             print(errorMsgStr)
             with open(errorStr,'a') as logFileHandle:
-                logFileHandle.write( errorMsgStr + "\n" )
+                logFileHandle.write(errorMsgStr+"\n")
             
         if self.script_export_bool:
             with open(scriptStr,"a") as target:
@@ -146,24 +146,24 @@ class tag():
 
     def stopLog(self):
         self.current_time_str = time.strftime("%Y%m%d%H%M%S")
-        # yearDiffInt   = int(self.current_time_str[0:4])  -int(self.begin_time_str[0:4])
-        # monthDiffInt  = int(self.current_time_str[4:6])  -int(self.begin_time_str[4:6])
-        dayDiffInt    = int(self.current_time_str[6:8])  -int(self.begin_time_str[6:8])
-        hourDiffInt   = int(self.current_time_str[8:10]) -int(self.begin_time_str[8:10])
+        # yearDiffInt   = int(self.current_time_str[0:4])-int(self.begin_time_str[0:4])
+        # monthDiffInt  = int(self.current_time_str[4:6])-int(self.begin_time_str[4:6])
+        dayDiffInt    = int(self.current_time_str[6:8])-int(self.begin_time_str[6:8])
+        hourDiffInt   = int(self.current_time_str[8:10])-int(self.begin_time_str[8:10])
         minuteDiffInt = int(self.current_time_str[10:12])-int(self.begin_time_str[10:12])
         secondDiffInt = int(self.current_time_str[12:14])-int(self.begin_time_str[12:14])
 
         if secondDiffInt < 0 :
-            minuteDiffInt = minuteDiffInt -1
-            secondDiffInt = secondDiffInt + 60
+            minuteDiffInt = minuteDiffInt-1
+            secondDiffInt = secondDiffInt+60
 
         if minuteDiffInt < 0 :
-            hourDiffInt = hourDiffInt -1
-            minuteDiffInt = minuteDiffInt + 60
+            hourDiffInt = hourDiffInt-1
+            minuteDiffInt = minuteDiffInt+60
 
         if hourDiffInt < 0 :
-            dayDiffInt = dayDiffInt -1
-            hourDiffInt = hourDiffInt + 24
+            dayDiffInt = dayDiffInt-1
+            hourDiffInt = hourDiffInt+24
 
         if dayDiffInt < 0 :
             totalTimeStr = "More than one month..."
