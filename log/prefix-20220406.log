@@ -1,0 +1,11 @@
+Begin at 2022-04-06 22:15:25
+----------
+[2022-04-06 22:15:25] NOTE: something not EXIST
+[2022-04-06 22:15:25] Run command: echo something
+something
+[2022-04-06 22:15:25] Run command: echo something into example.txt
+[2022-04-06 22:15:25] Run command: echo the following commands into example.sh
+[2022-04-06 22:15:25] Run command: echo something into example.txt
+Finished on [2022-04-06 22:15:25]
+     Total time: 0 hr 0 min 0 s 
+
