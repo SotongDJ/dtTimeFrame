@@ -7,7 +7,7 @@ class tag():
         self.begin_time_str = ""
         self.current_time_str = ""
         self.phrase_str = ""
-        self.delimiter_str = ""
+        self.delimiter_str = "- :"
 
         self.error_log_bool = True
         self.log_name_str = ""
@@ -30,7 +30,6 @@ class tag():
             with open(pathStr,'a') as logFileHandle:
                 logFileHandle.write("\n\n----\n\n")
 
-        self.delimiter_str = "- :" # for convertTime()
         self.phrase_str = "Begin at {}".format(self.convertTime())
         
         self.printPhrase()
@@ -38,7 +37,6 @@ class tag():
 
         self.current_time_str = ""
         self.phrase_str = ""
-        self.delimiter_str = ""
 
     def printTimeStamp(self):
         pathStr = "{}{}.log".format(
@@ -47,7 +45,6 @@ class tag():
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
 
         self.current_time_str = time.strftime("%Y%m%d%H%M%S")
-        self.delimiter_str = "- :" # for convertTime()
         timeMsgStr = "[{}] {}".format(self.convertTime(),self.phrase_str)
         print( timeMsgStr )
         with open(pathStr,'a') as logFileHandle:
@@ -55,7 +52,6 @@ class tag():
         
         self.current_time_str = ""
         self.phrase_str = ""
-        self.delimiter_str = ""
 
     def runCommand(self,targetStr=""):
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
@@ -66,7 +62,6 @@ class tag():
         else:
             errorStr = "/tmp/{}-error.log".format(self.log_name_str)
         self.current_time_str = time.strftime("%Y%m%d%H%M%S")
-        self.delimiter_str = "- :" # for convertTime()
         timeMsgStr = "[{}] Run command: {}".format(self.convertTime(),self.phrase_str)
         print( timeMsgStr )
         with open(pathStr,'a') as logFileHandle:
@@ -95,7 +90,6 @@ class tag():
 
         self.current_time_str = ""
         self.phrase_str = ""
-        self.delimiter_str = ""
         
     def printing(self,printMsgStr):
         pathStr = "{}{}.log".format(
@@ -109,7 +103,6 @@ class tag():
 
         self.current_time_str = ""
         self.phrase_str = ""
-        self.delimiter_str = ""
         
     def printPhrase(self):
         pathStr = "{}{}.log".format(
@@ -123,7 +116,6 @@ class tag():
 
         self.current_time_str = ""
         self.phrase_str = ""
-        self.delimiter_str = ""
 
     def printBlankLine(self):
         pathStr = "{}{}.log".format(
@@ -137,7 +129,6 @@ class tag():
 
         self.current_time_str = ""
         self.phrase_str = ""
-        self.delimiter_str = ""
 
     def printDashLine(self):
         pathStr = "{}{}.log".format(
@@ -151,7 +142,6 @@ class tag():
 
         self.current_time_str = ""
         self.phrase_str = ""
-        self.delimiter_str = ""
 
     def convertTime(self):
         yearStr   = self.current_time_str[0:4]
@@ -201,7 +191,6 @@ class tag():
                 str(secondDiffInt) + " s "
             )
 
-        self.delimiter_str = "- :" #for convertTime()
         self.phrase_str = "Finished on [{}]\n     Total time: {}\n".format(
             self.convertTime(),
             totalTimeStr
