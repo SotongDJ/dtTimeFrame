@@ -9,18 +9,16 @@ class tag():
         self.phrase_str = ""
         self.delimiter_dict = {"date":"-","join":" ","time":":"}
 
-        self.error_log_bool = True
         self.log_name_str = ""
         self.log_path_str = "config/"
+        self.error_log_bool = True
         self.script_export_bool = False
         
     def startLog(self):
         self.begin_time_str = time.strftime("%Y%m%d%H%M%S")
         self.current_time_str = time.strftime("%Y%m%d%H%M%S")
 
-        pathStr = "{}{}.log".format(
-            self.log_path_str,self.log_name_str
-        )
+        pathStr = F"{self.log_path_str}{self.log_name_str}.log"
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
 
         with open(pathStr,'a') as logFileHandle:
@@ -36,9 +34,7 @@ class tag():
         self.printDashLine()
 
     def printTimeStamp(self):
-        pathStr = "{}{}.log".format(
-            self.log_path_str,self.log_name_str
-        )
+        pathStr = F"{self.log_path_str}{self.log_name_str}.log"
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
 
         self.current_time_str = time.strftime("%Y%m%d%H%M%S")
@@ -52,12 +48,12 @@ class tag():
 
     def runCommand(self,targetStr=""):
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
-        scriptStr = "{}{}.sh".format(self.log_path_str,self.log_name_str)
-        pathStr = "{}{}.log".format(self.log_path_str,self.log_name_str)
+        scriptStr = F"{self.log_path_str}{self.log_name_str}.sh"
+        pathStr = F"{self.log_path_str}{self.log_name_str}.log"
         if self.error_log_bool:
-            errorStr = "{}{}-error.log".format(self.log_path_str,self.log_name_str)
+            errorStr = F"{self.log_path_str}{self.log_name_str}-error.log"
         else:
-            errorStr = "/tmp/{}-error.log".format(self.log_name_str)
+            errorStr = F"/tmp/{self.log_name_str}-error.log"
         self.current_time_str = time.strftime("%Y%m%d%H%M%S")
         timeMsgStr = "[{}] Run command: {}".format(self.convertTime(),self.phrase_str)
         print( timeMsgStr )
@@ -80,18 +76,16 @@ class tag():
         elif targetStr == "":
             call(commandList, stdout=open(pathStr,'a'),stderr=open(errorStr,'a'))
         else:
-            print("    Output file: {}\n".format(targetStr))
+            print(F"    Output file: {targetStr}\n")
             with open(errorStr,"a") as target:
-                target.write("    Output file: {}\n".format(targetStr))
+                target.write(F"    Output file: {targetStr}\n")
             call(commandList, stdout=open(targetStr,'w'),stderr=open(errorStr,'a'))
 
         self.current_time_str = ""
         self.phrase_str = ""
         
     def printing(self,printMsgStr):
-        pathStr = "{}{}.log".format(
-            self.log_path_str,self.log_name_str
-        )
+        pathStr = F"{self.log_path_str}{self.log_name_str}.log"
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
 
         print(printMsgStr)
@@ -102,9 +96,7 @@ class tag():
         self.phrase_str = ""
         
     def printPhrase(self):
-        pathStr = "{}{}.log".format(
-            self.log_path_str,self.log_name_str
-        )
+        pathStr = F"{self.log_path_str}{self.log_name_str}.log"
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
 
         print(self.phrase_str)
@@ -115,9 +107,7 @@ class tag():
         self.phrase_str = ""
 
     def printBlankLine(self):
-        pathStr = "{}{}.log".format(
-            self.log_path_str,self.log_name_str
-        )
+        pathStr = F"{self.log_path_str}{self.log_name_str}.log"
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
 
         print("  ")
@@ -128,9 +118,7 @@ class tag():
         self.phrase_str = ""
 
     def printDashLine(self):
-        pathStr = "{}{}.log".format(
-            self.log_path_str,self.log_name_str
-        )
+        pathStr = F"{self.log_path_str}{self.log_name_str}.log"
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
 
         print("----------")
@@ -185,9 +173,6 @@ class tag():
                 str(minuteDiffInt) + " min "+
                 str(secondDiffInt) + " s "
             )
-
-        self.phrase_str = "Finished on [{}]\n     Total time: {}\n".format(
-            self.convertTime(),
-            totalTimeStr
-        )
+        end_phrase_str = "Finished on [{}]\n     Total time: {}\n"
+        self.phrase_str = end_phrase_str.format(self.convertTime(),totalTimeStr)
         self.printPhrase()
