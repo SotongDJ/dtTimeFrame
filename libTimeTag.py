@@ -18,7 +18,7 @@ class tag():
         self.begin_time_str = time.strftime("%Y%m%d%H%M%S")
         self.current_time_str = time.strftime("%Y%m%d%H%M%S")
 
-        pathStr = F"{self.log_path_str}{self.log_name_str}.log"
+        pathStr = F"{self.log_path_str}{self.log_name_str}-log.txt"
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
 
         with open(pathStr,'a') as logFileHandle:
@@ -34,7 +34,7 @@ class tag():
         self.printDashLine()
 
     def printTimeStamp(self):
-        pathStr = F"{self.log_path_str}{self.log_name_str}.log"
+        pathStr = F"{self.log_path_str}{self.log_name_str}-log.txt"
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
 
         self.current_time_str = time.strftime("%Y%m%d%H%M%S")
@@ -49,11 +49,11 @@ class tag():
     def runCommand(self,targetStr=""):
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
         scriptStr = F"{self.log_path_str}{self.log_name_str}.sh"
-        pathStr = F"{self.log_path_str}{self.log_name_str}.log"
+        pathStr = F"{self.log_path_str}{self.log_name_str}-log.txt"
         if self.error_log_bool:
-            errorStr = F"{self.log_path_str}{self.log_name_str}-error.log"
+            errorStr = F"{self.log_path_str}{self.log_name_str}-error-log.txt"
         else:
-            errorStr = F"/tmp/{self.log_name_str}-error.log"
+            errorStr = F"/tmp/{self.log_name_str}-error-log.txt"
         self.current_time_str = time.strftime("%Y%m%d%H%M%S")
         timeMsgStr = "[{}] Run command: {}".format(self.convertTime(),self.phrase_str)
         print(timeMsgStr)
@@ -85,7 +85,7 @@ class tag():
         self.phrase_str = ""
         
     def printing(self,printMsgStr):
-        pathStr = F"{self.log_path_str}{self.log_name_str}.log"
+        pathStr = F"{self.log_path_str}{self.log_name_str}-log.txt"
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
 
         print(printMsgStr)
@@ -96,7 +96,7 @@ class tag():
         self.phrase_str = ""
         
     def printPhrase(self):
-        pathStr = F"{self.log_path_str}{self.log_name_str}.log"
+        pathStr = F"{self.log_path_str}{self.log_name_str}-log.txt"
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
 
         print(self.phrase_str)
@@ -107,7 +107,7 @@ class tag():
         self.phrase_str = ""
 
     def printBlankLine(self):
-        pathStr = F"{self.log_path_str}{self.log_name_str}.log"
+        pathStr = F"{self.log_path_str}{self.log_name_str}-log.txt"
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
 
         print("  ")
@@ -118,7 +118,7 @@ class tag():
         self.phrase_str = ""
 
     def printDashLine(self):
-        pathStr = F"{self.log_path_str}{self.log_name_str}.log"
+        pathStr = F"{self.log_path_str}{self.log_name_str}-log.txt"
         pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
 
         print("----------")
