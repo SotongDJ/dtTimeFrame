@@ -81,7 +81,7 @@ class tag:
         #
         self.current_time_str = ""
         self.phrase_str = ""
-    def runCommand(self,targetStr=None):
+    def runCommand(self,target_str=None):
         self.current_time_str = time.strftime("%Y%m%d%H%M%S")
         time_msg_str = "[{}] Run command: {}".format(self.convertTime(),self.phrase_str)
         self.log_file_handle.append(time_msg_str)
@@ -94,10 +94,10 @@ class tag:
             script_str = F"{self.log_path_str}{self.log_name_str}.sh"
             with open(script_str,"a") as target:
                 target.write(" ".join(commandList)+"\n")
-        elif targetStr:
-            output_msg_str = F"    Output file: {targetStr}"
+        elif target_str:
+            output_msg_str = F"    Output file: {target_str}"
             self.log_file_handle.append(output_msg_str)
-            call(commandList, stdout=open(targetStr,'w'),stderr=self.log_file_handle.err_handle())
+            call(commandList, stdout=open(target_str,'w'),stderr=self.log_file_handle.err_handle())
         else:
             call(commandList, stdout=self.log_file_handle.log_handle(),stderr=self.log_file_handle.err_handle())
         #
