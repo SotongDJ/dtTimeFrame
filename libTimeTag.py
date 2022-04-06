@@ -97,7 +97,7 @@ class tag:
         elif target_str:
             output_msg_str = F"    Output file: {target_str}"
             self.log_file_handle.append(output_msg_str)
-            call(commandList, stdout=open(target_str,'w'),stderr=self.log_file_handle.err_handle())
+            call(commandList, stdout=open(target_str,'a'),stderr=self.log_file_handle.err_handle())
         else:
             call(commandList, stdout=self.log_file_handle.log_handle(),stderr=self.log_file_handle.err_handle())
         #
