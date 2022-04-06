@@ -168,11 +168,7 @@ class tag():
         if dayDiffInt < 0 :
             totalTimeStr = "More than one month..."
         else:
-            totalTimeStr = (
-                str(hourDiffInt) + " hr "+
-                str(minuteDiffInt) + " min "+
-                str(secondDiffInt) + " s "
-            )
+            totalTimeStr = F"{hourDiffInt} hr {minuteDiffInt} min {secondDiffInt} s"
         end_phrase_str = "Finished on [{}]\n     Total time: {}\n"
         self.phrase_str = end_phrase_str.format(self.convertTime(),totalTimeStr)
         self.printPhrase()
