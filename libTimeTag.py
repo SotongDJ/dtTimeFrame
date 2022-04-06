@@ -1,6 +1,49 @@
 #!/usr/bin/env python3
-import pathlib, time
+import pathlib, time, sys
 from subprocess import call
+class logFile:
+    def __init__(self):
+        self.log_name = None
+        self.error_name = None
+    def create(self,log_name,err=None):
+        self.log_name = log_name
+        if err:
+            self.error_name = err
+        self.append("",print_bool=False)
+        if open(self.log_name).read() != "":
+            if self.error_name:
+                if open(self.error_name).read() != "":
+                    self.append("\n\n----\n\n",print_bool=False)
+            else:
+                self.append("\n\n----\n\n",print_bool=False)
+    def append(self,word_str,print_bool=True):
+        if self.log_name:
+            with open(self.log_name,'a') as logFileHandle:
+                logFileHandle.write(word_str+"\n")
+            if self.error_name:
+                with open(self.error_name,'a') as logFileHandle:
+                    logFileHandle.write(word_str+"\n")
+        if print_bool:
+            print(word_str)
+    def error(self,word_str):
+        if self.log_name:
+            if self.error_name:
+                with open(self.error_name,'a') as logFileHandle:
+                    logFileHandle.write(word_str+"\n")
+            else:
+                with open(self.log_name,'a') as logFileHandle:
+                    logFileHandle.write("ERROR: no specific error log file\n"+word_str+"\n")
+        print(word_str)
+    def log_handle(self):
+        if self.log_name:
+            return open(self.log_name,'a')
+        else:
+            return sys.stdout
+    def err_handle(self):
+        if self.error_name:
+            return open(self.error_name,'a')
+        else:
+            return sys.stderr
 
 class tag():
     def __init__(self):
