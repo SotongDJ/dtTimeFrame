@@ -7,7 +7,7 @@ class tag():
         self.begin_time_str = ""
         self.current_time_str = ""
         self.phrase_str = ""
-        self.delimiter_str = "- :"
+        self.delimiter_dict = {"date":"-","join":" ","time":":"}
 
         self.error_log_bool = True
         self.log_name_str = ""
@@ -147,14 +147,12 @@ class tag():
         hourStr   = self.current_time_str[8:10]
         minuteStr = self.current_time_str[10:12]
         secondStr = self.current_time_str[12:14]
-
-        if len(self.delimiter_str) != 3:
-            self.delimiter_str =  "-_-"
-
-        convertedMsgStr = (
-            self.delimiter_str[0].join([ yearStr, monthStr, dayStr ])
-            + self.delimiter_str[1]
-            + self.delimiter_str[2].join([ hourStr, minuteStr, secondStr ]))
+        # fallback
+        if set(self.delimiter_dict.keys()) != set(["date","time","join"]):
+            self.delimiter_dict =  {"date":"-","join":"_","time":"-"}
+        date_str = self.delimiter_dict["date"].join([yearStr, monthStr, dayStr])
+        time_str = self.delimiter_dict["time"].join([hourStr, minuteStr, secondStr])
+        convertedMsgStr = (self.delimiter_dict["join"].join([date_str,time_str]))
 
         return convertedMsgStr
 
