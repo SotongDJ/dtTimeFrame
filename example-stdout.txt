@@ -1,0 +1,3 @@
+something into example-stdout.txt
+Turn off shell script export
+something into example-stdout.txt but not example.sh

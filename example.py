@@ -1,41 +1,41 @@
 #!/usr/bin/env python3
 import libTimeTag, argparse, datetime
 parser = argparse.ArgumentParser(description="run some tool")
-parser.add_argument("-s", "--script", help="export commands as script",action="store_true")
-parser.add_argument("-t", "--target_str", help="give target (optional)",type=str)
-parser.add_argument("-f", "--target_file", help="give target (optional)",type=str)
+parser.add_argument("-s", "--script", help="give command sh script (optional)",type=str)
+parser.add_argument("-n", "--name", help="give name string(optional)",type=str)
+parser.add_argument("-o", "--output", help="give output name (optional)",type=str)
 args = parser.parse_args()
-if args.target_str:
-    target_str = args.target_str
+if args.name:
+    name = args.name
 else:
-    target_str = "something"
-if args.target_file:
-    target_file = args.target_file
+    name = "something"
+if args.output:
+    output = args.output
 else:
-    target_file = "example.txt"
+    output = "example-stdout.txt"
 Tool = libTimeTag.tag()
-# prefix-20210201.log
-# prefix-20210201-error.log
-Tool.log_name_str = 'prefix-{}'.format(datetime.datetime.now(tz=datetime.timezone(datetime.timedelta(hours=8),name="UTC+8")).strftime("%Y%m%d"))
-Tool.log_path_str = "log/"
-# default testingBool is False
-if args.script:
-    Tool.script_export_bool = True
-Tool.startLog()
-Tool.phrase_str = "NOTE: {} not EXIST".format(target_str)
-Tool.printTimeStamp()
+Tool.log.name = "example-log.txt"
+Tool.error.name = "example-error.txt"
 
-Tool.phrase_str = F"echo {target_str}"
-Tool.runCommand()
-Tool.phrase_str = F"echo {target_str} into {target_file}"
-Tool.runCommand(target_str=target_file)
-Tool.script_export_bool = True
-Tool.phrase_str = "echo the following commands into example.sh"
-Tool.runCommand()
-Tool.phrase_str = F"echo {target_str} into example.sh but not {target_file}"
-Tool.runCommand(target_str=target_file)
-Tool.script_export_bool = False
-Tool.phrase_str = F"echo {target_str} into {target_file} but not example.sh"
-Tool.runCommand(target_str=target_file)
+Tool.start()
 
-Tool.stopLog()
+Tool.timeStamp("PREVIEW: {} not EXIST".format(name))
+
+Tool.runCommand(F"echo {name}")
+
+Tool.runCommand(F"echo {name} into {output}",export_file=output)
+
+Tool.script.name = "example-shell.sh"
+phrase_str = F"echo the following commands into {Tool.script.name}"
+Tool.runCommand(phrase_str)
+
+phrase_str = F"echo {name} into {Tool.script.name} but not {output}"
+Tool.runCommand(phrase_str,export_file=output)
+
+Tool.script.name = ""
+Tool.runCommand("echo Turn off shell script export",export_file=output)
+
+phrase_str = F"echo {name} into {output} but not example.sh"
+Tool.runCommand(phrase_str,export_file=output)
+
+Tool.stop()
