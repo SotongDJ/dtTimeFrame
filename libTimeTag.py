@@ -1,139 +1,104 @@
 #!/usr/bin/env python3
-import pathlib, time, sys
+import time, sys, json
 from subprocess import call
-class logFile:
+class fileHandle:
     def __init__(self):
-        self.log_name = None
-        self.error_name = None
-    def create(self,log_name,err=None):
-        self.log_name = log_name
-        if err:
-            self.error_name = err
-        self.append("",print_bool=False)
-        if open(self.log_name).read() != "":
-            if self.error_name:
-                if open(self.error_name).read() != "":
-                    self.append("\n\n----\n\n",print_bool=False)
-            else:
-                self.append("\n\n----\n\n",print_bool=False)
-    def append(self,word_str,print_bool=True):
-        if self.log_name:
-            with open(self.log_name,'a') as logFileHandle:
-                logFileHandle.write(word_str+"\n")
-            if self.error_name:
-                with open(self.error_name,'a') as logFileHandle:
-                    logFileHandle.write(word_str+"\n")
-        if print_bool:
-            print(word_str)
-    def error(self,word_str):
-        if self.log_name:
-            if self.error_name:
-                with open(self.error_name,'a') as logFileHandle:
-                    logFileHandle.write(word_str+"\n")
-            else:
-                with open(self.log_name,'a') as logFileHandle:
-                    logFileHandle.write("ERROR: no specific error log file\n"+word_str+"\n")
-        print(word_str)
-    def log_handle(self):
-        if self.log_name:
-            return open(self.log_name,'a')
+        self.name = ""
+        self.stat = "init"
+        self.alt = None
+    def append(self,word_str):
+        if self.name != "":
+            with open(self.name,'a') as target_handle:
+                if self.stat != "on":
+                    if open(self.name).read() != "":
+                        target_handle.write("----------\n")
+                    self.stat = "on"
+                target_handle.write(word_str)
+    def handle(self,mode='a'):
+        if self.name == "":
+            return self.alt
         else:
-            return sys.stdout
-    def err_handle(self):
-        if self.error_name:
-            return open(self.error_name,'a')
-        else:
-            return sys.stderr
-
+            self.append("")
+            return open(self.name,mode)
 class tag:
     def __init__(self):
         #
         self.begin_time_str = ""
-        self.current_time_str = ""
-        self.phrase_str = ""
         self.delimiter_dict = {"date":"-","join":" ","time":":"}
+        self.print_bool = True
         #
-        self.log_name_str = ""
-        self.log_path_str = "config/"
-        self.log_bool = True
-        self.log_file_handle = logFile()
-        self.error_log_bool = True
-        self.script_export_bool = False
-    def startLog(self):
+        self.log = fileHandle()
+        self.log.alt = sys.stdout
+        self.error = fileHandle()
+        self.error.alt = sys.stderr
+        self.script = fileHandle()
+        self.json_name = ""
+    def print(self,word_str,end="\n"):
+        log_list = [self.log,self.error,self.script]
+        for target in log_list:
+            if target.name != "":
+                with target.handle() as target_handle:
+                    target_handle.write(word_str+end)
+        if self.print_bool:
+            print(word_str)
+    def start(self):
         self.begin_time_str = time.strftime("%Y%m%d%H%M%S")
-        self.current_time_str = time.strftime("%Y%m%d%H%M%S")
-        if self.log_bool:
-            pathlib.Path(self.log_path_str).mkdir(parents=True,exist_ok=True)
-            path_str = F"{self.log_path_str}{self.log_name_str}-log.txt"
-            if self.error_log_bool:
-                error_path_str = F"{self.log_path_str}{self.log_name_str}-log-error.txt"
-                self.log_file_handle.create(path_str,err=error_path_str)
-            else:
-                self.log_file_handle.create(path_str)
-        self.phrase_str = "Begin at {}".format(self.convertTime())
+        phrase_str = "Begin at {}".format(self.convertTime())
         #
-        self.printPhrase()
-        self.printDashLine()
-    def printTimeStamp(self):
-        self.current_time_str = time.strftime("%Y%m%d%H%M%S")
-        time_msg_str = "[{}] {}".format(self.convertTime(),self.phrase_str)
-        self.log_file_handle.append(time_msg_str)
-        #
-        self.current_time_str = ""
-        self.phrase_str = ""
-    def runCommand(self,target_str=None):
-        self.current_time_str = time.strftime("%Y%m%d%H%M%S")
-        time_msg_str = "[{}] Run command: {}".format(self.convertTime(),self.phrase_str)
-        self.log_file_handle.append(time_msg_str)
-        #
-        commandList = self.phrase_str.split(" ")
+        self.print(phrase_str)
+        self.dash()
+    def timeStamp(self,word_str):
+        time_msg_str = "[{}] {}".format(self.convertTime(),word_str)
+        self.print(time_msg_str)
+    def runCommand(self,word_str,export_file=None,mode="a"):
+        time_msg_str = "[{}] Run command: {}".format(self.convertTime(),word_str)
+        self.print(time_msg_str)
+        commandList = word_str.split(" ")
+        mode_dict = {"a":" >> ","w":" > "}
         if "" in commandList:
-            error_msg_str = "\n[libCommand ERROR MSG] \"\" in command line\n"
-            self.log_file_handle.error(error_msg_str)  
-        if self.script_export_bool:
-            script_str = F"{self.log_path_str}{self.log_name_str}.sh"
-            with open(script_str,"a") as target:
-                target.write(" ".join(commandList)+"\n")
-        elif target_str:
-            output_msg_str = F"    Output file: {target_str}"
-            self.log_file_handle.append(output_msg_str)
-            call(commandList, stdout=open(target_str,'a'),stderr=self.log_file_handle.err_handle())
+            error_msg_str = "\n[libCommand ERROR MSG] empty command line\n"
+            self.print(error_msg_str)
+        if export_file:
+            output_msg_str = F"    Output file: {export_file}"
+            self.print(output_msg_str)
+            if self.script.name == "":
+                call(commandList, stdout=open(export_file,mode),stderr=self.error.handle())
+            else:
+                with self.script.handle() as script_handle:
+                    script_handle.write(" ".join(commandList)+mode_dict[mode]+F"{export_file}\n")
         else:
-            call(commandList, stdout=self.log_file_handle.log_handle(),stderr=self.log_file_handle.err_handle())
-        #
-        self.current_time_str = ""
-        self.phrase_str = ""
-    def printing(self,printMsgStr):
-        self.log_file_handle.append(printMsgStr)
-    def printPhrase(self):
-        self.log_file_handle.append(self.phrase_str)
-        self.phrase_str = ""
-    def printBlankLine(self):
-        self.log_file_handle.append("  ")
-    def printDashLine(self):
-        self.log_file_handle.append("----------")
+            if self.script.name == "":
+                call(commandList, stdout=self.log.handle(),stderr=self.error.handle())
+            else:
+                with self.script.handle() as script_handle:
+                    script_handle.write(" ".join(commandList)+"\n")
+    def blank(self):
+        self.print("  ")
+    def dash(self):
+        self.print("----------")
     def convertTime(self):
-        yearStr   = self.current_time_str[0:4]
-        monthStr  = self.current_time_str[4:6]
-        dayStr    = self.current_time_str[6:8]
-        hourStr   = self.current_time_str[8:10]
-        minuteStr = self.current_time_str[10:12]
-        secondStr = self.current_time_str[12:14]
+        current_time_str = time.strftime("%Y%m%d%H%M%S")
+        yearStr   = current_time_str[0:4]
+        monthStr  = current_time_str[4:6]
+        dayStr    = current_time_str[6:8]
+        hourStr   = current_time_str[8:10]
+        minuteStr = current_time_str[10:12]
+        secondStr = current_time_str[12:14]
         # fallback
         if set(self.delimiter_dict.keys()) != set(["date","time","join"]):
             self.delimiter_dict =  {"date":"-","join":"_","time":"-"}
         date_str = self.delimiter_dict["date"].join([yearStr, monthStr, dayStr])
         time_str = self.delimiter_dict["time"].join([hourStr, minuteStr, secondStr])
-        convertedMsgStr = (self.delimiter_dict["join"].join([date_str,time_str]))
-        return convertedMsgStr
-    def stopLog(self):
-        self.current_time_str = time.strftime("%Y%m%d%H%M%S")
-        # yearDiffInt   = int(self.current_time_str[0:4])-int(self.begin_time_str[0:4])
-        # monthDiffInt  = int(self.current_time_str[4:6])-int(self.begin_time_str[4:6])
-        dayDiffInt    = int(self.current_time_str[6:8])-int(self.begin_time_str[6:8])
-        hourDiffInt   = int(self.current_time_str[8:10])-int(self.begin_time_str[8:10])
-        minuteDiffInt = int(self.current_time_str[10:12])-int(self.begin_time_str[10:12])
-        secondDiffInt = int(self.current_time_str[12:14])-int(self.begin_time_str[12:14])
+        converted_msg_str = (self.delimiter_dict["join"].join([date_str,time_str]))
+        return converted_msg_str
+    def stop(self):
+        current_time_str = time.strftime("%Y%m%d%H%M%S")
+        # yearDiffInt   = int(current_time_str[0:4])-int(self.begin_time_str[0:4])
+        # monthDiffInt  = int(current_time_str[4:6])-int(self.begin_time_str[4:6])
+        dayDiffInt    = int(current_time_str[6:8])-int(self.begin_time_str[6:8])
+        hourDiffInt   = int(current_time_str[8:10])-int(self.begin_time_str[8:10])
+        minuteDiffInt = int(current_time_str[10:12])-int(self.begin_time_str[10:12])
+        secondDiffInt = int(current_time_str[12:14])-int(self.begin_time_str[12:14])
         if secondDiffInt < 0 :
             minuteDiffInt = minuteDiffInt-1
             secondDiffInt = secondDiffInt+60
@@ -147,6 +112,6 @@ class tag:
             totalTimeStr = "More than one month..."
         else:
             totalTimeStr = F"{hourDiffInt} hr {minuteDiffInt} min {secondDiffInt} s"
-        end_phrase_str = "Finished on [{}]\n     Total time: {}\n"
-        self.phrase_str = end_phrase_str.format(self.convertTime(),totalTimeStr)
-        self.printPhrase()
+        end_phrase_str = "Finished on [{}]\n     Total time: {}"
+        phrase_str = end_phrase_str.format(self.convertTime(),totalTimeStr)
+        self.print(phrase_str)
