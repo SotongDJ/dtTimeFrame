@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# python3 example-v2.py -o example-v2
 import libCommand, argparse, datetime
 parser = argparse.ArgumentParser(description="run some tool")
 parser.add_argument("-s", "--script", help="export commands as script",action="store_true")
@@ -26,11 +27,14 @@ Tool.printTimeStamp()
 
 Tool.phraseStr = F"echo {target_str}"
 Tool.runCommand()
+
 Tool.phraseStr = F"echo {target_str} into {Tool.folderStr}{output_str}-stdout.txt" # without "
 Tool.runCommand(targetStr=F"{Tool.folderStr}{output_str}-stdout.txt")
+
 Tool.testingBool = True
 Tool.phraseStr = "echo the following commands into shell script" # without "
 Tool.runCommand()
+
 Tool.phraseStr = F"echo {target_str} into {Tool.folderStr}{output_str}-stdout.txt" # without "
 Tool.runCommand(targetStr=F"{Tool.folderStr}{output_str}-stdout.txt")
 
