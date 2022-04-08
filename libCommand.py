@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import libTimeTag
-import sys
+import sys, pathlib
 from subprocess import call
 class timer(libTimeTag.tag):
     def __init__(self):
@@ -31,6 +31,7 @@ class timer(libTimeTag.tag):
         time_str = self.delimiterStr[2]
         self.delimiter_dict = {"date":date_str,"join":join_str,"time":time_str}
     def startLog(self):
+        pathlib.Path(self.folderStr).mkdir(parents=True,exist_ok=True)
         self.log.name = F"{self.folderStr}{self.logFilenameStr}-log.txt"
         self.delimiterStr = "- :" # for convertTime()
         self.convertDelimiter()
@@ -47,9 +48,9 @@ class timer(libTimeTag.tag):
         if self.testingBool:
             self.script.name = F"{self.folderStr}{self.logFilenameStr}.sh"
         if self.errorBool:
-            self.error.name = F"{self.folderStr}{self.logFilenameStr}-error.log"
+            self.error.name = F"{self.folderStr}{self.logFilenameStr}-error.txt"
         else:
-            self.error.name = F"/tmp/{self.logFilenameStr}-error.log"
+            self.error.name = F"/tmp/{self.logFilenameStr}-error.txt"
         if "" in commandList:
             error_msg_str = "\n[libCommand ERROR MSG] empty command line\n"
             self.print(error_msg_str)
@@ -58,7 +59,7 @@ class timer(libTimeTag.tag):
             self.print(output_msg_str)
             if self.testingBool:
                 with self.script.handle() as script_handle:
-                    script_handle.write(" ".join(commandList)+mode_dict[mode]+F"{export_file}\n")
+                    script_handle.write(" ".join(commandList)+mode_dict[mode]+F"{targetStr}\n")
             else:
                 call(commandList, stdout=open(targetStr,mode),stderr=self.error.handle())
         else:
