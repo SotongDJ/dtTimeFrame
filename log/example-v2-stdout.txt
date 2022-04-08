@@ -1,0 +1,1 @@
+something into log/example-v2-stdout.txt

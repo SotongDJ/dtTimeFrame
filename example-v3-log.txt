@@ -1,0 +1,19 @@
+Begin at 2022-04-08 15:43:35
+----------
+[2022-04-08 15:43:35] PREVIEW: show something
+[2022-04-08 15:43:35] Run command: echo something
+something
+[2022-04-08 15:43:35] Run command: echo something into example-v3-log.txt
+    Output file: example-v3-log.txt
+something into example-v3-log.txt
+[2022-04-08 15:43:35] Run command: echo the following commands into example-v3-shell.sh
+[2022-04-08 15:43:35] Run command: echo something into example-v3-shell.sh but not example-v3-log.txt
+    Output file: example-v3-log.txt
+[2022-04-08 15:43:35] Run command: echo Turn off shell script export
+    Output file: example-v3-log.txt
+Turn off shell script export
+[2022-04-08 15:43:35] Run command: echo something into example-v3-log.txt but not example.sh
+    Output file: example-v3-log.txt
+something into example-v3-log.txt but not example.sh
+Finished on [2022-04-08 15:43:35]
+     Total time: 0 hr 0 min 0 s
