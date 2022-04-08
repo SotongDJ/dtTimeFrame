@@ -43,23 +43,29 @@ class timer(libTimeTag.tag):
         self.print(time_msg_str)
         commandList = self.phraseStr.split(" ")
         mode_dict = {"a":" >> ","w":" > "}
+        if self.testingBool:
+            self.script.name = F"{self.folderStr}{self.logFilenameStr}.sh"
+        if self.errorBool:
+            self.error.name = F"{self.folderStr}{self.logFilenameStr}-error.log"
+        else:
+            self.error.name = F"/tmp/{self.logFilenameStr}-error.log"
         if "" in commandList:
             error_msg_str = "\n[libCommand ERROR MSG] empty command line\n"
             self.print(error_msg_str)
         if targetStr != "":
             output_msg_str = F"    Output file: {targetStr}"
             self.print(output_msg_str)
-            if self.script.name == "":
-                call(commandList, stdout=open(targetStr,mode),stderr=self.error.handle())
-            else:
+            if self.testingBool:
                 with self.script.handle() as script_handle:
-                    script_handle.write(" ".join(commandList)+mode_dict[mode]+F"{targetStr}\n")
-        else:
-            if self.script.name == "":
-                call(commandList, stdout=self.log.handle(),stderr=self.error.handle())
+                    script_handle.write(" ".join(commandList)+mode_dict[mode]+F"{export_file}\n")
             else:
+                call(commandList, stdout=open(targetStr,mode),stderr=self.error.handle())
+        else:
+            if self.testingBool:
                 with self.script.handle() as script_handle:
                     script_handle.write(" ".join(commandList)+"\n")
+            else:
+                call(commandList, stdout=self.log.handle(),stderr=self.error.handle())
     def printing(self,printMsgStr):
         self.print(printMsgStr)
     def printPhrase(self):
