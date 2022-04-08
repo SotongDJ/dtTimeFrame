@@ -1,12 +1,12 @@
-Begin at 2022-04-08 15:43:42
+Begin at 2022-04-08 15:51:07
 ----------
-[2022-04-08 15:43:42] PREVIEW: something
-[2022-04-08 15:43:42] Run command: echo something
+[2022-04-08 15:51:07] PREVIEW: something
+[2022-04-08 15:51:07] Run command: echo something
 something
-[2022-04-08 15:43:42] Run command: echo something into log/example-v2-stdout.txt
+[2022-04-08 15:51:07] Run command: echo something into log/example-v2-stdout.txt
     Output file: log/example-v2-stdout.txt
-[2022-04-08 15:43:42] Run command: echo the following commands into shell script
-[2022-04-08 15:43:42] Run command: echo something into log/example-v2-stdout.txt
+[2022-04-08 15:51:07] Run command: echo the following commands into shell script
+[2022-04-08 15:51:07] Run command: echo something into log/example-v2-stdout.txt
     Output file: log/example-v2-stdout.txt
-Finished on [2022-04-08 15:43:42]
+Finished on [2022-04-08 15:51:07]
      Total time: 0 hr 0 min 0 s

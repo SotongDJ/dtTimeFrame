@@ -1,0 +1,15 @@
+Begin at 2022-04-08 15:51:09
+----------
+[2022-04-08 15:51:09] PREVIEW: show something
+[2022-04-08 15:51:09] Run command: echo something
+[2022-04-08 15:51:09] Run command: echo something into log/example-v3-stdout.txt
+    Output file: log/example-v3-stdout.txt
+[2022-04-08 15:51:09] Run command: echo the following commands into log/example-v3-script.sh
+[2022-04-08 15:51:09] Run command: echo something into log/example-v3-script.sh but not log/example-v3-stdout.txt
+    Output file: log/example-v3-stdout.txt
+[2022-04-08 15:51:09] Run command: echo Turn off shell script export
+    Output file: log/example-v3-stdout.txt
+[2022-04-08 15:51:09] Run command: echo something into log/example-v3-stdout.txt but not example.sh
+    Output file: log/example-v3-stdout.txt
+Finished on [2022-04-08 15:51:09]
+     Total time: 0 hr 0 min 0 s
