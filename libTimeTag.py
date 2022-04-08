@@ -34,7 +34,7 @@ class tag:
         self.script = fileHandle()
         self.json_name = ""
     def print(self,word_str,end="\n"):
-        log_list = [self.log,self.error,self.script]
+        log_list = [self.log,self.error]
         for target in log_list:
             if target.name != "":
                 with target.handle() as target_handle:
