@@ -4,7 +4,7 @@ parser = argparse.ArgumentParser(description="run some tool")
 parser.add_argument("-n", "--name", help="give name string(optional)",type=str,default="something")
 parser.add_argument("-o", "--output", help="give output log name (optional)",type=str,default="example-v3-log.txt")
 parser.add_argument("-e", "--error", help="give error log name (optional)",type=str,default="example-v3-error.txt")
-parser.add_argument("-s", "--script", help="give shell script name(optional)",type=str,default="example-v3.sh")
+parser.add_argument("-s", "--script", help="give shell script name(optional)",type=str,default="example-v3-shell.sh")
 args = parser.parse_args()
 Tool = libTimeTag.tag()
 Tool.log.name = args.output

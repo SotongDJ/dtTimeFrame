@@ -46,7 +46,7 @@ class timer(libTimeTag.tag):
         commandList = self.phraseStr.split(" ")
         mode_dict = {"a":" >> ","w":" > "}
         if self.testingBool:
-            self.script.name = F"{self.folderStr}{self.logFilenameStr}.sh"
+            self.script.name = F"{self.folderStr}{self.logFilenameStr}-script.sh"
         if self.errorBool:
             self.error.name = F"{self.folderStr}{self.logFilenameStr}-error.txt"
         else:
