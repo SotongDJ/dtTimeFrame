@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import libTimeTag
+import sys
 from subprocess import call
 class timer(libTimeTag.tag):
     def __init__(self):
