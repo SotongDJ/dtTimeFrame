@@ -17,6 +17,8 @@ Tool.timeStamp("PREVIEW: show {}".format(args.name))
 
 Tool.runCommand(F"echo {args.name}")
 
+Tool.runCommand(F"sleep 2")
+
 Tool.runCommand(F"echo {args.name} into {args.output}",export_file=args.output)
 
 Tool.script.name = args.script
