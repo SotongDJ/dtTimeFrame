@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import time, sys, json
+import sys, json, time, datetime
 from subprocess import call
 class fileHandle:
     def __init__(self):
@@ -43,12 +43,12 @@ class tag:
             print(word_str)
     def start(self):
         self.begin_time_str = time.strftime("%Y%m%d%H%M%S")
-        phrase_str = "Begin at {}".format(self.convertTime())
-        #
+        convert_time_str = self.convertTime(current=self.begin_time_str)
+        phrase_str = F"Begin at {convert_time_str}"
         self.print(phrase_str)
         self.dash()
     def timeStamp(self,word_str):
-        time_msg_str = "[{}] {}".format(self.convertTime(),word_str)
+        time_msg_str = "[{}] Note: {}".format(self.convertTime(),word_str)
         self.print(time_msg_str)
     def runCommand(self,word_str,export_file=None,mode="a"):
         time_msg_str = "[{}] Run command: {}".format(self.convertTime(),word_str)
@@ -76,42 +76,52 @@ class tag:
         self.print("  ")
     def dash(self):
         self.print("----------")
-    def convertTime(self):
-        current_time_str = time.strftime("%Y%m%d%H%M%S")
-        yearStr   = current_time_str[0:4]
-        monthStr  = current_time_str[4:6]
-        dayStr    = current_time_str[6:8]
-        hourStr   = current_time_str[8:10]
-        minuteStr = current_time_str[10:12]
-        secondStr = current_time_str[12:14]
-        # fallback
-        if set(self.delimiter_dict.keys()) != set(["date","time","join"]):
-            self.delimiter_dict =  {"date":"-","join":"_","time":"-"}
-        date_str = self.delimiter_dict["date"].join([yearStr, monthStr, dayStr])
-        time_str = self.delimiter_dict["time"].join([hourStr, minuteStr, secondStr])
-        converted_msg_str = (self.delimiter_dict["join"].join([date_str,time_str]))
+    def getTimeDict(self,input_str):
+        time_dict = {
+            "year"  : input_str[0:4],
+            "month" : input_str[4:6],
+            "day"   : input_str[6:8],
+            "hour"  : input_str[8:10],
+            "minute": input_str[10:12],
+            "second": input_str[12:14],
+        }
+        return time_dict
+    def convertTime(self,current=""):
+        if current == "":
+            current = time.strftime("%Y%m%d%H%M%S")
+        current_time_dict = self.getTimeDict(current)
+        if set(self.delimiter_dict.keys()) != set(["date","join","time"]):
+            self.delimiter_dict =  {"date":"-","join":"_","time":":"}
+        current_time_dict.update(self.delimiter_dict)
+        format_str = "{year}{date}{month}{date}{day}{join}{hour}{time}{minute}{time}{second}"
+        converted_msg_str = format_str.format(**current_time_dict)
         return converted_msg_str
+    def measureTime(self,start,stop):
+        int_dict = dict()
+        start_date = datetime.datetime.strptime(start,"%Y%m%d%H%M%S")
+        stop_date = datetime.datetime.strptime(stop,"%Y%m%d%H%M%S")
+        start_int = int(datetime.datetime.timestamp(start_date))
+        stop_int = int(datetime.datetime.timestamp(stop_date))
+        int_dict["second"] = stop_int - start_int
+        section_lists = [
+            ["second","minute",60],
+            ["minute","hour",60],
+            ["hour","day",24],
+        ]
+        for section_list in section_lists:
+            from_str,to_str,limit_int = section_list
+            if int_dict[from_str] > limit_int:
+                second_int = int_dict[from_str] % limit_int
+                minite_int = int((int_dict[from_str] - second_int) / limit_int)
+                int_dict[from_str] = second_int
+                int_dict[to_str] = minite_int
+            else:
+                int_dict[to_str] = 0
+        return int_dict
     def stop(self):
         current_time_str = time.strftime("%Y%m%d%H%M%S")
-        # yearDiffInt   = int(current_time_str[0:4])-int(self.begin_time_str[0:4])
-        # monthDiffInt  = int(current_time_str[4:6])-int(self.begin_time_str[4:6])
-        dayDiffInt    = int(current_time_str[6:8])-int(self.begin_time_str[6:8])
-        hourDiffInt   = int(current_time_str[8:10])-int(self.begin_time_str[8:10])
-        minuteDiffInt = int(current_time_str[10:12])-int(self.begin_time_str[10:12])
-        secondDiffInt = int(current_time_str[12:14])-int(self.begin_time_str[12:14])
-        if secondDiffInt < 0 :
-            minuteDiffInt = minuteDiffInt-1
-            secondDiffInt = secondDiffInt+60
-        if minuteDiffInt < 0 :
-            hourDiffInt = hourDiffInt-1
-            minuteDiffInt = minuteDiffInt+60
-        if hourDiffInt < 0 :
-            dayDiffInt = dayDiffInt-1
-            hourDiffInt = hourDiffInt+24
-        if dayDiffInt < 0 :
-            totalTimeStr = "More than one month..."
-        else:
-            totalTimeStr = F"{hourDiffInt} hr {minuteDiffInt} min {secondDiffInt} s"
+        diff_dict = self.measureTime(self.begin_time_str, current_time_str)
+        totalTimeStr = "{day} day {hour} hr {minute} min {second} s".format(**diff_dict)
         end_phrase_str = "Finished on [{}]\n     Total time: {}"
         phrase_str = end_phrase_str.format(self.convertTime(),totalTimeStr)
         self.print(phrase_str)
