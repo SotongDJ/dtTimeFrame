@@ -32,6 +32,8 @@ class tag:
         self.error = fileHandle()
         self.error.alt = sys.stderr
         self.script = fileHandle()
+        #
+        self.record_dict = dict()
         self.json_name = ""
     def print(self,word_str,end="\n"):
         log_list = [self.log,self.error]
@@ -41,18 +43,37 @@ class tag:
                     target_handle.write(word_str+end)
         if self.print_bool:
             print(word_str)
+    def record(self,time_str,content_str):
+        count_int = len(self.record_dict)
+        if count_int == 0:
+            diff_str = "Initial, 0 s"
+        else:
+            diff_dict = self.measureTime(self.record_dict[count_int-1]["time_stamp"],time_str)
+            diff_str = "{day} day {hour} hr {minute} min {second} s".format(**diff_dict)
+        self.record_dict[count_int] = {
+            "time_stamp": time_str,
+            "print_msg": content_str,
+            "time_diff": diff_str,
+        }
     def start(self):
         self.begin_time_str = time.strftime("%Y%m%d%H%M%S")
         convert_time_str = self.convertTime(current=self.begin_time_str)
         phrase_str = F"Begin at {convert_time_str}"
         self.print(phrase_str)
+        self.record(self.begin_time_str,phrase_str)
         self.dash()
     def timeStamp(self,word_str):
-        time_msg_str = "[{}] Note: {}".format(self.convertTime(),word_str)
+        current_time_str = time.strftime("%Y%m%d%H%M%S")
+        convert_time_str = self.convertTime(current=current_time_str)
+        time_msg_str = "[{}] Note: {}".format(convert_time_str,word_str)
         self.print(time_msg_str)
+        self.record(current_time_str,time_msg_str)
     def runCommand(self,word_str,export_file=None,mode="a"):
-        time_msg_str = "[{}] Run command: {}".format(self.convertTime(),word_str)
+        current_time_str = time.strftime("%Y%m%d%H%M%S")
+        convert_time_str = self.convertTime(current=current_time_str)
+        time_msg_str = "[{}] Run command: {}".format(convert_time_str,word_str)
         self.print(time_msg_str)
+        self.record(current_time_str,time_msg_str)
         commandList = word_str.split(" ")
         mode_dict = {"a":" >> ","w":" > "}
         if "" in commandList:
@@ -123,5 +144,10 @@ class tag:
         diff_dict = self.measureTime(self.begin_time_str, current_time_str)
         totalTimeStr = "{day} day {hour} hr {minute} min {second} s".format(**diff_dict)
         end_phrase_str = "Finished on [{}]\n     Total time: {}"
-        phrase_str = end_phrase_str.format(self.convertTime(),totalTimeStr)
+        convert_time_str = self.convertTime(current=current_time_str)
+        phrase_str = end_phrase_str.format(convert_time_str,totalTimeStr)
         self.print(phrase_str)
+        self.record(current_time_str,phrase_str)
+        if self.json_name != "":
+            with open(self.json_name,"w") as target_handle:
+                json.dump(self.record_dict,target_handle,indent=1)
