@@ -1,212 +1,83 @@
 #!/usr/bin/env python3
-import pathlib, time
+import libTimeTag
+import sys, pathlib
 from subprocess import call
-
-class timer():
+class timer(libTimeTag.tag):
     def __init__(self):
+        #
         self.beginTimeStr = ""
-        self.currentTimeStr = ""
+        # self.currentTimeStr = "" # abandoned
         self.phraseStr = ""
         self.delimiterStr = ""
-
+        #
         self.logFilenameStr = ""
         self.folderStr = "config/"
         self.testingBool = False
         self.errorBool = True
-        
+        #
+        self.begin_time_str = ""
+        self.delimiter_dict = {"date":"-","join":" ","time":":"}
+        self.print_bool = True
+        #
+        self.log = libTimeTag.fileHandle()
+        self.log.alt = sys.stdout
+        self.error = libTimeTag.fileHandle()
+        self.error.alt = sys.stderr
+        self.script = libTimeTag.fileHandle()
+        self.json_name = ""
+    def convertDelimiter(self):
+        date_str = self.delimiterStr[0]
+        join_str = self.delimiterStr[1]
+        time_str = self.delimiterStr[2]
+        self.delimiter_dict = {"date":date_str,"join":join_str,"time":time_str}
     def startLog(self):
-        self.beginTimeStr = time.strftime("%Y%m%d%H%M%S")
-        self.currentTimeStr = time.strftime("%Y%m%d%H%M%S")
-
-        pathStr = "{}{}.log".format(
-            self.folderStr,self.logFilenameStr
-        )
         pathlib.Path(self.folderStr).mkdir(parents=True,exist_ok=True)
-
-        with open(pathStr,'a') as logFileHandle:
-            logFileHandle.write("")
-
-        if open(pathStr).read() != "":
-            with open(pathStr,'a') as logFileHandle:
-                logFileHandle.write("\n\n----\n\n")
-
+        self.log.name = F"{self.folderStr}{self.logFilenameStr}-log.txt"
         self.delimiterStr = "- :" # for convertTime()
-        self.phraseStr = "Begin at {}".format(self.convertTime())
-        
-        self.printPhrase()
-        self.printDashLine()
-
-        self.currentTimeStr = ""
-        self.phraseStr = ""
-        self.delimiterStr = ""
-
+        self.convertDelimiter()
+        self.start()
+        self.beginTimeStr = self.begin_time_str
     def printTimeStamp(self):
-        pathStr = "{}{}.log".format(
-            self.folderStr,self.logFilenameStr
-        )
-        pathlib.Path(self.folderStr).mkdir(parents=True,exist_ok=True)
-
-        self.currentTimeStr = time.strftime("%Y%m%d%H%M%S")
-        self.delimiterStr = "- :" # for convertTime()
-        timeMsgStr = "[{}] {}".format(self.convertTime(),self.phraseStr)
-        print( timeMsgStr )
-        with open(pathStr,'a') as logFileHandle:
-            logFileHandle.write( timeMsgStr+"\n" )
-        
-        self.currentTimeStr = ""
+        self.timeStamp(self.phraseStr)
         self.phraseStr = ""
-        self.delimiterStr = ""
-
-    def runCommand(self,targetStr=""):
-        pathlib.Path(self.folderStr).mkdir(parents=True,exist_ok=True)
-        scriptStr = "{}{}.sh".format(self.folderStr,self.logFilenameStr)
-        pathStr = "{}{}.log".format(self.folderStr,self.logFilenameStr)
-        if self.errorBool:
-            errorStr = "{}{}-error.log".format(self.folderStr,self.logFilenameStr)
-        else:
-            errorStr = "/tmp/{}-error.log".format(self.logFilenameStr)
-        self.currentTimeStr = time.strftime("%Y%m%d%H%M%S")
-        self.delimiterStr = "- :" # for convertTime()
-        timeMsgStr = "[{}] Run command: {}".format(self.convertTime(),self.phraseStr)
-        print( timeMsgStr )
-        with open(pathStr,'a') as logFileHandle:
-            logFileHandle.write( timeMsgStr + "\n" )
-        
-        with open(errorStr,'a') as logFileHandle:
-            logFileHandle.write( timeMsgStr + "\n" )
-        
+    def runCommand(self,targetStr="",mode="a"):
+        time_msg_str = "[{}] Run command: {}".format(self.convertTime(),self.phraseStr)
+        self.print(time_msg_str)
         commandList = self.phraseStr.split(" ")
-        if "" in commandList:
-            errorMsgStr = "\n[libCommand ERROR MSG] \"\" in command line\n"
-            print(errorMsgStr)
-            with open(errorStr,'a') as logFileHandle:
-                logFileHandle.write( errorMsgStr + "\n" )
-            
+        mode_dict = {"a":" >> ","w":" > "}
         if self.testingBool:
-            with open(scriptStr,"a") as target:
-                target.write(" ".join(commandList)+"\n")
-        elif targetStr == "":
-            call(commandList, stdout=open(pathStr,'a'),stderr=open(errorStr,'a'))
+            self.script.name = F"{self.folderStr}{self.logFilenameStr}-script.sh"
+        if self.errorBool:
+            self.error.name = F"{self.folderStr}{self.logFilenameStr}-error.txt"
         else:
-            print("    Output file: {}\n".format(targetStr))
-            with open(errorStr,"a") as target:
-                target.write("    Output file: {}\n".format(targetStr))
-            call(commandList, stdout=open(targetStr,'w'),stderr=open(errorStr,'a'))
-
-        self.currentTimeStr = ""
-        self.phraseStr = ""
-        self.delimiterStr = ""
-        
+            self.error.name = F"/tmp/{self.logFilenameStr}-error.txt"
+        if "" in commandList:
+            error_msg_str = "\n[libCommand ERROR MSG] empty command line\n"
+            self.print(error_msg_str)
+        if targetStr != "":
+            output_msg_str = F"    Output file: {targetStr}"
+            self.print(output_msg_str)
+            if self.testingBool:
+                with self.script.handle() as script_handle:
+                    script_handle.write(" ".join(commandList)+mode_dict[mode]+F"{targetStr}\n")
+            else:
+                call(commandList, stdout=open(targetStr,mode),stderr=self.error.handle())
+        else:
+            if self.testingBool:
+                with self.script.handle() as script_handle:
+                    script_handle.write(" ".join(commandList)+"\n")
+            else:
+                call(commandList, stdout=self.log.handle(),stderr=self.error.handle())
     def printing(self,printMsgStr):
-        pathStr = "{}{}.log".format(
-            self.folderStr,self.logFilenameStr
-        )
-        pathlib.Path(self.folderStr).mkdir(parents=True,exist_ok=True)
-
-        print(printMsgStr)
-        with open(pathStr,'a') as logFileHandle:
-            logFileHandle.write(printMsgStr+"\n")
-
-        self.currentTimeStr = ""
-        self.phraseStr = ""
-        self.delimiterStr = ""
-        
+        self.print(printMsgStr)
     def printPhrase(self):
-        pathStr = "{}{}.log".format(
-            self.folderStr,self.logFilenameStr
-        )
-        pathlib.Path(self.folderStr).mkdir(parents=True,exist_ok=True)
-
-        print(self.phraseStr)
-        with open(pathStr,'a') as logFileHandle:
-            logFileHandle.write(self.phraseStr+"\n")
-
-        self.currentTimeStr = ""
+        self.print(self.phraseStr)
         self.phraseStr = ""
-        self.delimiterStr = ""
-
     def printBlankLine(self):
-        pathStr = "{}{}.log".format(
-            self.folderStr,self.logFilenameStr
-        )
-        pathlib.Path(self.folderStr).mkdir(parents=True,exist_ok=True)
-
-        print("  ")
-        with open(pathStr,'a') as logFileHandle:
-            logFileHandle.write("  \n")
-
-        self.currentTimeStr = ""
-        self.phraseStr = ""
-        self.delimiterStr = ""
-
+        self.blank()
     def printDashLine(self):
-        pathStr = "{}{}.log".format(
-            self.folderStr,self.logFilenameStr
-        )
-        pathlib.Path(self.folderStr).mkdir(parents=True,exist_ok=True)
-
-        print("----------")
-        with open(pathStr,'a') as logFileHandle:
-            logFileHandle.write("----------\n")
-
-        self.currentTimeStr = ""
-        self.phraseStr = ""
-        self.delimiterStr = ""
-
-    def convertTime(self):
-        yearStr   = self.currentTimeStr[0:4]
-        monthStr  = self.currentTimeStr[4:6]
-        dayStr    = self.currentTimeStr[6:8]
-        hourStr   = self.currentTimeStr[8:10]
-        minuteStr = self.currentTimeStr[10:12]
-        secondStr = self.currentTimeStr[12:14]
-
-        if len(self.delimiterStr) != 3:
-            self.delimiterStr =  "-_-"
-
-        convertedMsgStr = (
-            self.delimiterStr[0].join([ yearStr, monthStr, dayStr ])
-            + self.delimiterStr[1]
-            + self.delimiterStr[2].join([ hourStr, minuteStr, secondStr ]))
-
-        return convertedMsgStr
-
+        self.dash()
     def stopLog(self):
-        self.currentTimeStr = time.strftime("%Y%m%d%H%M%S")
-        # yearDiffInt   = int(self.currentTimeStr[0:4])  -int(self.beginTimeStr[0:4])
-        # monthDiffInt  = int(self.currentTimeStr[4:6])  -int(self.beginTimeStr[4:6])
-        dayDiffInt    = int(self.currentTimeStr[6:8])  -int(self.beginTimeStr[6:8])
-        hourDiffInt   = int(self.currentTimeStr[8:10]) -int(self.beginTimeStr[8:10])
-        minuteDiffInt = int(self.currentTimeStr[10:12])-int(self.beginTimeStr[10:12])
-        secondDiffInt = int(self.currentTimeStr[12:14])-int(self.beginTimeStr[12:14])
-
-        if secondDiffInt < 0 :
-            minuteDiffInt = minuteDiffInt -1
-            secondDiffInt = secondDiffInt + 60
-
-        if minuteDiffInt < 0 :
-            hourDiffInt = hourDiffInt -1
-            minuteDiffInt = minuteDiffInt + 60
-
-        if hourDiffInt < 0 :
-            dayDiffInt = dayDiffInt -1
-            hourDiffInt = hourDiffInt + 24
-
-        if dayDiffInt < 0 :
-            totalTimeStr = "More than one month..."
-        else:
-            totalTimeStr = (
-                str(hourDiffInt) + " hr "+
-                str(minuteDiffInt) + " min "+
-                str(secondDiffInt) + " s "
-            )
-
-        self.delimiterStr = "- :" #for convertTime()
-        self.phraseStr = "Finished on [{}]\n     Total time: {}\n".format(
-            self.convertTime(),
-            totalTimeStr
-        )
-        self.printPhrase()
-
-        self.phraseStr = ""
-        self.currentTimeStr = ""
+        self.begin_time_str = self.beginTimeStr
+        self.convertDelimiter()
+        self.stop()
