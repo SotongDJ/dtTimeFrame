@@ -6,16 +6,20 @@ parser.add_argument("-l", "--log", help="give output log name (optional)",type=s
 parser.add_argument("-e", "--error", help="give error log name (optional)",type=str,default="log/example-v3-error.txt")
 parser.add_argument("-s", "--script", help="give shell script name(optional)",type=str,default="log/example-v3-script.sh")
 parser.add_argument("-o", "--output", help="give output file name (optional)",type=str,default="log/example-v3-stdout.txt")
+parser.add_argument("-j", "--json", help="give output json file name (optional)",type=str,default="log/example-v3-record.json")
 args = parser.parse_args()
 Tool = libTimeTag.tag()
 Tool.log.name = args.log
 Tool.error.name = args.error
+Tool.json_name = args.json
 
 Tool.start()
 
 Tool.timeStamp("PREVIEW: show {}".format(args.name))
 
 Tool.runCommand(F"echo {args.name}")
+
+Tool.runCommand(F"sleep 2")
 
 Tool.runCommand(F"echo {args.name} into {args.output}",export_file=args.output)
 

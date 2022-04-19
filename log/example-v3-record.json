@@ -1,0 +1,52 @@
+{
+ "0": {
+  "time_stamp": "20220415172323",
+  "print_msg": "Begin at 2022-04-15 17:23:23",
+  "time_diff": "Initial, 0 s"
+ },
+ "1": {
+  "time_stamp": "20220415172323",
+  "print_msg": "[2022-04-15 17:23:23] Note: PREVIEW: show something",
+  "time_diff": "0 day 0 hr 0 min 0 s"
+ },
+ "2": {
+  "time_stamp": "20220415172323",
+  "print_msg": "[2022-04-15 17:23:23] Run command: echo something",
+  "time_diff": "0 day 0 hr 0 min 0 s"
+ },
+ "3": {
+  "time_stamp": "20220415172323",
+  "print_msg": "[2022-04-15 17:23:23] Run command: sleep 2",
+  "time_diff": "0 day 0 hr 0 min 0 s"
+ },
+ "4": {
+  "time_stamp": "20220415172325",
+  "print_msg": "[2022-04-15 17:23:25] Run command: echo something into log/example-v3-stdout.txt",
+  "time_diff": "0 day 0 hr 0 min 2 s"
+ },
+ "5": {
+  "time_stamp": "20220415172325",
+  "print_msg": "[2022-04-15 17:23:25] Run command: echo the following commands into log/example-v3-script.sh",
+  "time_diff": "0 day 0 hr 0 min 0 s"
+ },
+ "6": {
+  "time_stamp": "20220415172325",
+  "print_msg": "[2022-04-15 17:23:25] Run command: echo something into log/example-v3-script.sh but not log/example-v3-stdout.txt",
+  "time_diff": "0 day 0 hr 0 min 0 s"
+ },
+ "7": {
+  "time_stamp": "20220415172325",
+  "print_msg": "[2022-04-15 17:23:25] Run command: echo Turn off shell script export",
+  "time_diff": "0 day 0 hr 0 min 0 s"
+ },
+ "8": {
+  "time_stamp": "20220415172325",
+  "print_msg": "[2022-04-15 17:23:25] Run command: echo something into log/example-v3-stdout.txt but not example.sh",
+  "time_diff": "0 day 0 hr 0 min 0 s"
+ },
+ "9": {
+  "time_stamp": "20220415172325",
+  "print_msg": "Finished on [2022-04-15 17:23:25]\n     Total time: 0 day 0 hr 0 min 2 s",
+  "time_diff": "0 day 0 hr 0 min 0 s"
+ }
+}
