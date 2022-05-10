@@ -61,7 +61,6 @@ class tag:
         phrase_str = F"Begin at {convert_time_str}"
         self.print(phrase_str)
         self.record(self.begin_time_str,phrase_str)
-        self.dash()
     def timeStamp(self,word_str):
         current_time_str = time.strftime("%Y%m%d%H%M%S")
         convert_time_str = self.convertTime(current=current_time_str)
