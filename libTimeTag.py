@@ -20,6 +20,10 @@ class fileHandle:
         else:
             self.append("")
             return open(self.name,mode)
+    def clear(self): # clear content
+        if self.name != "":
+            with open(self.name,'w') as target_handle:
+                    target_handle.write("")
 class tag:
     def __init__(self):
         #
@@ -35,6 +39,10 @@ class tag:
         #
         self.record_dict = dict()
         self.json_name = ""
+    def clearFile(self):
+        self.log.clear()
+        self.error.clear()
+        self.script.clear()
     def print(self,word_str,end="\n"):
         log_list = [self.log,self.error]
         for target in log_list:
