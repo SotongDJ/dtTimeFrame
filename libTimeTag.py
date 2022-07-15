@@ -166,6 +166,7 @@ class detector:
         self.target_str = ""
         self.path_str = ""
         self.print = print
+        self.call = call
     def missing(self):
         if pathlib.Path(self.target_str).exists():
             self.print(F"NOTE: {self.target_str} existed")
@@ -180,6 +181,6 @@ class detector:
         self.target_str = target_str
         self.path_str = "{}/{}".format(pathlib.Path(target_str).parent,"doing-"+pathlib.Path(target_str).name)
     def done(self):
-        self.runCommand(F"mv -v {self.path_str} {self.target_str}")
+        self.call(F"mv -v {self.path_str} {self.target_str}")
         self.target_str = ""
         self.path_str = ""
