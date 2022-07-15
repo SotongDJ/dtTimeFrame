@@ -165,6 +165,7 @@ class detector:
     def __init__(self):
         self.target_str = ""
         self.alt_target_str = ""
+        self.print = print
     def missing(self):
         if pathlib.Path(self.target_str).exists():
             self.print(F"NOTE: {self.target_str} existed")
