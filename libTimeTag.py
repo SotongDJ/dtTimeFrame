@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-import sys, json, time, datetime
+import sys, pathlib, json, time, datetime
 from subprocess import call
+#
 class fileHandle:
     def __init__(self):
         self.name = ""
@@ -24,6 +25,7 @@ class fileHandle:
         if self.name != "":
             with open(self.name,'w') as target_handle:
                     target_handle.write("")
+#
 class tag:
     def __init__(self):
         #
@@ -158,3 +160,25 @@ class tag:
         if self.json_name != "":
             with open(self.json_name,"w") as target_handle:
                 json.dump(self.record_dict,target_handle,indent=1)
+#
+class detector:
+    def __init__(self):
+        self.target_str = ""
+        self.alt_target_str = ""
+    def missing(self):
+        if pathlib.Path(self.target_str).exists():
+            self.print(F"NOTE: {self.target_str} existed")
+            target_bool = False
+        else:
+            if pathlib.Path(self.alt_target_str).exists():
+                pathlib.Path(self.alt_target_str).unlink()
+                self.print(F"NOTE: {self.alt_target_str} removed")
+            target_bool = True
+        return target_bool
+    def do(self,target_str):
+        self.target_str = target_str
+        self.alt_target_str = "{}/{}".format(pathlib.Path(target_str).parent,"doing-"+pathlib.Path(target_str).name)
+    def done(self):
+        self.runCommand(F"mv -v {self.alt_target_str} {self.target_str}")
+        self.target_str = ""
+        self.alt_target_str = ""
