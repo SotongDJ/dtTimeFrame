@@ -164,22 +164,22 @@ class tag:
 class detector:
     def __init__(self):
         self.target_str = ""
-        self.alt_target_str = ""
+        self.path_str = ""
         self.print = print
     def missing(self):
         if pathlib.Path(self.target_str).exists():
             self.print(F"NOTE: {self.target_str} existed")
             target_bool = False
         else:
-            if pathlib.Path(self.alt_target_str).exists():
-                pathlib.Path(self.alt_target_str).unlink()
-                self.print(F"NOTE: {self.alt_target_str} removed")
+            if pathlib.Path(self.path_str).exists():
+                pathlib.Path(self.path_str).unlink()
+                self.print(F"NOTE: {self.path_str} removed")
             target_bool = True
         return target_bool
     def do(self,target_str):
         self.target_str = target_str
-        self.alt_target_str = "{}/{}".format(pathlib.Path(target_str).parent,"doing-"+pathlib.Path(target_str).name)
+        self.path_str = "{}/{}".format(pathlib.Path(target_str).parent,"doing-"+pathlib.Path(target_str).name)
     def done(self):
-        self.runCommand(F"mv -v {self.alt_target_str} {self.target_str}")
+        self.runCommand(F"mv -v {self.path_str} {self.target_str}")
         self.target_str = ""
-        self.alt_target_str = ""
+        self.path_str = ""
