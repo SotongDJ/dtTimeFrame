@@ -34,9 +34,9 @@ class tag:
         self.print_bool = True
         #
         self.log = fileHandle()
-        self.log.alt = sys.stdout
+        self.log.alt = sys.stdout  # type: ignore
         self.error = fileHandle()
-        self.error.alt = sys.stderr
+        self.error.alt = sys.stderr  # type: ignore
         self.script = fileHandle()
         #
         self.record_dict = dict()
@@ -49,7 +49,7 @@ class tag:
         log_list = [self.log,self.error]
         for target in log_list:
             if target.name != "":
-                with target.handle() as target_handle:
+                with target.handle() as target_handle:  # type: ignore
                     target_handle.write(word_str+end)
         if self.print_bool:
             print(word_str)
@@ -94,13 +94,13 @@ class tag:
             if self.script.name == "":
                 call(commandList, stdout=open(export_file,mode),stderr=self.error.handle())
             else:
-                with self.script.handle() as script_handle:
+                with self.script.handle() as script_handle:  # type: ignore
                     script_handle.write(" ".join(commandList)+mode_dict[mode]+F"{export_file}\n")
         else:
             if self.script.name == "":
                 call(commandList, stdout=self.log.handle(),stderr=self.error.handle())
             else:
-                with self.script.handle() as script_handle:
+                with self.script.handle() as script_handle:  # type: ignore
                     script_handle.write(" ".join(commandList)+"\n")
     def blank(self):
         self.print("  ")
