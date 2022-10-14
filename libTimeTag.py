@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-import sys, json, time, datetime
+import sys, pathlib, json, time, datetime
 from subprocess import call
+#
 class fileHandle:
     def __init__(self):
         self.name = ""
@@ -24,6 +25,7 @@ class fileHandle:
         if self.name != "":
             with open(self.name,'w') as target_handle:
                     target_handle.write("")
+#
 class tag:
     def __init__(self):
         #
@@ -32,9 +34,9 @@ class tag:
         self.print_bool = True
         #
         self.log = fileHandle()
-        self.log.alt = sys.stdout
+        self.log.alt = sys.stdout  # type: ignore
         self.error = fileHandle()
-        self.error.alt = sys.stderr
+        self.error.alt = sys.stderr  # type: ignore
         self.script = fileHandle()
         #
         self.record_dict = dict()
@@ -47,7 +49,7 @@ class tag:
         log_list = [self.log,self.error]
         for target in log_list:
             if target.name != "":
-                with target.handle() as target_handle:
+                with target.handle() as target_handle:  # type: ignore
                     target_handle.write(word_str+end)
         if self.print_bool:
             print(word_str)
@@ -92,13 +94,13 @@ class tag:
             if self.script.name == "":
                 call(commandList, stdout=open(export_file,mode),stderr=self.error.handle())
             else:
-                with self.script.handle() as script_handle:
+                with self.script.handle() as script_handle:  # type: ignore
                     script_handle.write(" ".join(commandList)+mode_dict[mode]+F"{export_file}\n")
         else:
             if self.script.name == "":
                 call(commandList, stdout=self.log.handle(),stderr=self.error.handle())
             else:
-                with self.script.handle() as script_handle:
+                with self.script.handle() as script_handle:  # type: ignore
                     script_handle.write(" ".join(commandList)+"\n")
     def blank(self):
         self.print("  ")
@@ -158,3 +160,27 @@ class tag:
         if self.json_name != "":
             with open(self.json_name,"w") as target_handle:
                 json.dump(self.record_dict,target_handle,indent=1)
+#
+class detector:
+    def __init__(self):
+        self.target_str = ""
+        self.path_str = ""
+        self.print = print
+        self.call = call
+    def missing(self):
+        if pathlib.Path(self.target_str).exists():
+            self.print(F"NOTE: {self.target_str} existed")
+            target_bool = False
+        else:
+            if pathlib.Path(self.path_str).exists():
+                pathlib.Path(self.path_str).unlink()
+                self.print(F"NOTE: {self.path_str} removed")
+            target_bool = True
+        return target_bool
+    def do(self,target_str):
+        self.target_str = target_str
+        self.path_str = "{}/{}".format(pathlib.Path(target_str).parent,"doing-"+pathlib.Path(target_str).name)
+    def done(self):
+        self.call(F"mv -v {self.path_str} {self.target_str}")
+        self.target_str = ""
+        self.path_str = ""
