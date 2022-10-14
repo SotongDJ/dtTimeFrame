@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-import libTimeTag
+# import libTimeTag
+from pyTimeTag import libTimeTag
 import sys, pathlib
 from subprocess import call
 class timer(libTimeTag.tag):
@@ -20,10 +21,12 @@ class timer(libTimeTag.tag):
         self.print_bool = True
         #
         self.log = libTimeTag.fileHandle()
-        self.log.alt = sys.stdout
+        self.log.alt = sys.stdout  # type: ignore
         self.error = libTimeTag.fileHandle()
-        self.error.alt = sys.stderr
+        self.error.alt = sys.stderr  # type: ignore
         self.script = libTimeTag.fileHandle()
+        #
+        self.record_dict = dict()
         self.json_name = ""
     def convertDelimiter(self):
         date_str = self.delimiterStr[0]
@@ -58,13 +61,13 @@ class timer(libTimeTag.tag):
             output_msg_str = F"    Output file: {targetStr}"
             self.print(output_msg_str)
             if self.testingBool:
-                with self.script.handle() as script_handle:
+                with self.script.handle() as script_handle:  # type: ignore
                     script_handle.write(" ".join(commandList)+mode_dict[mode]+F"{targetStr}\n")
             else:
                 call(commandList, stdout=open(targetStr,mode),stderr=self.error.handle())
         else:
             if self.testingBool:
-                with self.script.handle() as script_handle:
+                with self.script.handle() as script_handle:  # type: ignore
                     script_handle.write(" ".join(commandList)+"\n")
             else:
                 call(commandList, stdout=self.log.handle(),stderr=self.error.handle())
