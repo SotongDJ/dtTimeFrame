@@ -160,7 +160,7 @@ class tag:
         if self.json_name != "":
             with open(self.json_name,"w") as target_handle:
                 json.dump(self.record_dict,target_handle,indent=1)
-
+#
 class detector:
     def __init__(self,print_func,call_func):
         self.target_str = ""
@@ -187,3 +187,20 @@ class detector:
         self.call(F"mv -v {self.doing_str} {self.target_str}")
         self.target_str = ""
         self.doing_str = ""
+#
+class paginator:
+    def __init__(self,input_list:list,split_num=5) -> None:
+        self.parent_list = input_list
+        self.parent_count = len(input_list)
+        self.split_number = split_num
+        self.split_left = self.parent_count%self.split_number
+        self.split_ceil = math.ceil(self.parent_count/self.split_number)
+        self.output_dict = dict()
+    def count(self) -> dict:
+        for each_num in range(self.split_ceil):
+            group_bool = ((each_num == self.split_ceil - 1) and (self.split_left > 0))
+            group_size = self.split_left if group_bool else self.split_number
+            self.start_num = each_num*self.split_number
+            self.end_num = (each_num*self.split_number)+group_size
+            self.output_dict[each_num] = [self.parent_list[pos_num] for pos_num in range(self.start_num,self.end_num)]
+        return self.output_dict
