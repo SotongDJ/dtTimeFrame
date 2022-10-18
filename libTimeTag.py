@@ -1,6 +1,12 @@
 #!/usr/bin/env python3
-import sys, pathlib, json, time, datetime
+import datetime
+import json
+import pathlib
+import sys
+import time
 from subprocess import call
+
+
 #
 class fileHandle:
     def __init__(self):
