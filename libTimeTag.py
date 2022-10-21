@@ -174,6 +174,7 @@ class detector:
         self.doing_str = ""
         self.print = print_func
         self.call = call_func
+        self.unlink = True
     def func(self,input_str:str) -> None: # self.print and self.call
         print(input_str)
     def missing(self):
@@ -182,9 +183,15 @@ class detector:
             target_bool = False
         else:
             if pathlib.Path(self.doing_str).exists():
-                pathlib.Path(self.doing_str).unlink()
-                self.print(F"NOTE: {self.doing_str} removed")
-            target_bool = True
+                if self.unlink:
+                    pathlib.Path(self.doing_str).unlink()
+                    self.print(F"NOTE: {self.doing_str} removed")
+                    target_bool = True
+                else:
+                    self.print(F"NOTE: {self.doing_str} keep and skip")
+                    target_bool = False
+            else:
+                target_bool = True
         return target_bool
     def do(self,target_str):
         self.target_str = target_str
