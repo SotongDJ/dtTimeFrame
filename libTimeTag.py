@@ -199,8 +199,6 @@ class detector:
     def done(self):
         self.print(F"NOTE: {self.doing_str} done")
         self.call(F"mv -v {self.doing_str} {self.target_str}")
-        self.target_str = ""
-        self.doing_str = ""
 #
 class paginator:
     def __init__(self,input_list:list,split_num=5) -> None:
