@@ -1,6 +1,13 @@
 #!/usr/bin/env python3
-import sys, pathlib, json, time, datetime
+import datetime
+import json
+import math
+import pathlib
+import sys
+import time
 from subprocess import call
+
+
 #
 class fileHandle:
     def __init__(self):
@@ -162,25 +169,50 @@ class tag:
                 json.dump(self.record_dict,target_handle,indent=1)
 #
 class detector:
-    def __init__(self):
+    def __init__(self,print_func,call_func):
         self.target_str = ""
-        self.path_str = ""
-        self.print = print
-        self.call = call
+        self.doing_str = ""
+        self.print = print_func
+        self.call = call_func
+        self.unlink = True
+    def func(self,input_str:str) -> None: # self.print and self.call
+        print(input_str)
     def missing(self):
         if pathlib.Path(self.target_str).exists():
             self.print(F"NOTE: {self.target_str} existed")
             target_bool = False
         else:
-            if pathlib.Path(self.path_str).exists():
-                pathlib.Path(self.path_str).unlink()
-                self.print(F"NOTE: {self.path_str} removed")
-            target_bool = True
+            if pathlib.Path(self.doing_str).exists():
+                if self.unlink:
+                    pathlib.Path(self.doing_str).unlink()
+                    self.print(F"NOTE: {self.doing_str} removed")
+                    target_bool = True
+                else:
+                    self.print(F"NOTE: {self.doing_str} keep and skip")
+                    target_bool = False
+            else:
+                target_bool = True
         return target_bool
     def do(self,target_str):
         self.target_str = target_str
-        self.path_str = "{}/{}".format(pathlib.Path(target_str).parent,"doing-"+pathlib.Path(target_str).name)
+        self.doing_str = "{}/{}".format(pathlib.Path(target_str).parent,"doing-"+pathlib.Path(target_str).name)
     def done(self):
-        self.call(F"mv -v {self.path_str} {self.target_str}")
-        self.target_str = ""
-        self.path_str = ""
+        self.print(F"NOTE: {self.doing_str} done")
+        self.call(F"mv -v {self.doing_str} {self.target_str}")
+#
+class paginator:
+    def __init__(self,input_list:list,split_num=5) -> None:
+        self.parent_list = input_list
+        self.parent_count = len(input_list)
+        self.split_number = split_num
+        self.split_left = self.parent_count%self.split_number
+        self.split_ceil = math.ceil(self.parent_count/self.split_number)
+        self.output_dict = dict()
+    def count(self) -> dict:
+        for each_num in range(self.split_ceil):
+            group_bool = ((each_num == self.split_ceil - 1) and (self.split_left > 0))
+            group_size = self.split_left if group_bool else self.split_number
+            self.start_num = each_num*self.split_number
+            self.end_num = (each_num*self.split_number)+group_size
+            self.output_dict[each_num] = [self.parent_list[pos_num] for pos_num in range(self.start_num,self.end_num)]
+        return self.output_dict

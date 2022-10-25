@@ -36,4 +36,12 @@ Tool.runCommand("echo Turn off shell script export",export_file=args.output)
 phrase_str = F"echo {args.name} into {args.output} but not example.sh"
 Tool.runCommand(phrase_str,export_file=args.output)
 
+for num_int in [1,3,4,3,1,5]:
+    count_handle = libTimeTag.detector(Tool.timeStamp,Tool.runCommand)
+    count_handle.do(F"example-{num_int}.txt")
+    if count_handle.missing():
+        phrase_str = F"touch example-{count_handle.doing_str}.txt"
+        Tool.runCommand(phrase_str)
+        count_handle.done()
+
 Tool.stop()
