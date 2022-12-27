@@ -165,8 +165,13 @@ class tag:
         self.print(phrase_str)
         self.record(current_time_str,phrase_str)
         if self.json_name != "":
+            json_dict = {}
+            if pathlib.Path(self.json_name).exists():
+                json_dict.update(json.load(open(self.json_name)))
+            json_prefix_str = str(len(json_dict))+"-" if len(json_dict) > 0 else ""
+            json_dict.update({F"{json_prefix_str}{x}":y for x,y in self.record_dict.items()})
             with open(self.json_name,"w") as target_handle:
-                json.dump(self.record_dict,target_handle,indent=1)
+                json.dump(json_dict,target_handle,indent=1)
 #
 class detector:
     def __init__(self,print_func,call_func):
