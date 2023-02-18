@@ -32,6 +32,11 @@ class fileHandle:
         if self.name != "":
             with open(self.name,'w') as target_handle:
                     target_handle.write("")
+    def load(self):
+        return json.load(open(self.name)) if self.name != "" else {}
+    def dump(self,target_dict):
+        with open(self.name,"w") as target_handle:
+            json.dump(target_dict,target_handle,indent=1)
 #
 class tag:
     def __init__(self):
@@ -44,10 +49,10 @@ class tag:
         self.log.alt = sys.stdout  # type: ignore
         self.error = fileHandle()
         self.error.alt = sys.stderr  # type: ignore
-        self.script = fileHandle()
         #
+        # self.json_name = ""
         self.record_dict = dict()
-        self.json_name = ""
+        self.script = fileHandle()
     def clearFile(self):
         self.log.clear()
         self.error.clear()
@@ -60,18 +65,21 @@ class tag:
                     target_handle.write(word_str+end)
         if self.print_bool:
             print(word_str)
-    def record(self,time_str,content_str):
+    def record(self,time_str,content_str,command_str=""):
         count_int = len(self.record_dict)
         if count_int == 0:
             diff_str = "Initial, 0 s"
         else:
             diff_dict = self.measureTime(self.record_dict[count_int-1]["time_stamp"],time_str)
             diff_str = "{day} day {hour} hr {minute} min {second} s".format(**diff_dict)
-        self.record_dict[count_int] = {
+        record_entry_dict = {
             "time_stamp": time_str,
             "print_msg": content_str,
             "time_diff": diff_str,
         }
+        if command_str != "":
+            record_entry_dict["cmd"] = command_str
+        self.record_dict[count_int] = record_entry_dict
     def start(self):
         self.begin_time_str = time.strftime("%Y%m%d%H%M%S")
         convert_time_str = self.convertTime(current=self.begin_time_str)
@@ -85,30 +93,29 @@ class tag:
         self.print(time_msg_str)
         self.record(current_time_str,time_msg_str)
     def runCommand(self,word_str,export_file=None,mode="a"):
+        mode_dict = {"a":" >> ","w":" > "}
         current_time_str = time.strftime("%Y%m%d%H%M%S")
         convert_time_str = self.convertTime(current=current_time_str)
         time_msg_str = "[{}] Run command: {}".format(convert_time_str,word_str)
         self.print(time_msg_str)
-        self.record(current_time_str,time_msg_str)
         commandList = word_str.split(" ")
-        mode_dict = {"a":" >> ","w":" > "}
-        if "" in commandList:
-            error_msg_str = "\n[libCommand ERROR MSG] empty command line\n"
-            self.print(error_msg_str)
         if export_file:
-            output_msg_str = F"    Output file: {export_file}"
-            self.print(output_msg_str)
-            if self.script.name == "":
+            full_command_str = " ".join(commandList)+mode_dict[mode]+F"{export_file}"+"\n"
+        else:
+            full_command_str = " ".join(commandList)+"\n"
+        self.record(current_time_str,time_msg_str,command_str=full_command_str)
+        if "" in commandList:
+            self.print("\n[libCommand ERROR MSG] empty command line\n")
+        if export_file:
+            self.print(F"    Output file: {export_file}")
+        if self.script.name == "":
+            if export_file:
                 call(commandList, stdout=open(export_file,mode),stderr=self.error.handle())
             else:
-                with self.script.handle() as script_handle:  # type: ignore
-                    script_handle.write(" ".join(commandList)+mode_dict[mode]+F"{export_file}\n")
-        else:
-            if self.script.name == "":
                 call(commandList, stdout=self.log.handle(),stderr=self.error.handle())
-            else:
-                with self.script.handle() as script_handle:  # type: ignore
-                    script_handle.write(" ".join(commandList)+"\n")
+        else:
+            with self.script.handle() as script_handle:  # type: ignore
+                script_handle.write(full_command_str)
     def blank(self):
         self.print("  ")
     def dash(self):
@@ -164,14 +171,13 @@ class tag:
         phrase_str = end_phrase_str.format(convert_time_str,totalTimeStr)
         self.print(phrase_str)
         self.record(current_time_str,phrase_str)
-        if self.json_name != "":
-            json_dict = {}
-            if pathlib.Path(self.json_name).exists():
-                json_dict.update(json.load(open(self.json_name)))
-            json_prefix_str = str(len(json_dict))+"-" if len(json_dict) > 0 else ""
-            json_dict.update({F"{json_prefix_str}{x}":y for x,y in self.record_dict.items()})
-            with open(self.json_name,"w") as target_handle:
-                json.dump(json_dict,target_handle,indent=1)
+        if self.script.name != "":
+            summary_dict = {}
+            if pathlib.Path(self.script.name).exists():
+                summary_dict.update(self.script.load())
+            entry_prefix_str = "[{}] ".format(len(summary_dict))
+            summary_dict.update({F"{entry_prefix_str}{x}":y for x,y in self.record_dict.items()})
+            self.script.dump(summary_dict)
 #
 class detector:
     def __init__(self,print_func,call_func):
