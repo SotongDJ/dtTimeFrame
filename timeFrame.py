@@ -49,14 +49,16 @@ class tag:
         self.log.alt = sys.stdout  # type: ignore
         self.error = fileHandle()
         self.error.alt = sys.stderr  # type: ignore
+        self.script = fileHandle()
         #
         # self.json_name = ""
         self.record_dict = dict()
-        self.script = fileHandle()
+        self.extra = fileHandle()
     def clearFile(self):
         self.log.clear()
         self.error.clear()
         self.script.clear()
+        self.extra.clear()
     def print(self,word_str,end="\n"):
         log_list = [self.log,self.error]
         for target in log_list:
@@ -171,13 +173,13 @@ class tag:
         phrase_str = end_phrase_str.format(convert_time_str,totalTimeStr)
         self.print(phrase_str)
         self.record(current_time_str,phrase_str)
-        if self.script.name != "":
+        if self.extra.name != "":
             summary_dict = {}
-            if pathlib.Path(self.script.name).exists():
-                summary_dict.update(self.script.load())
+            if pathlib.Path(self.extra.name).exists():
+                summary_dict.update(self.extra.load())
             entry_prefix_str = "[{}] ".format(len(summary_dict))
             summary_dict.update({F"{entry_prefix_str}{x}":y for x,y in self.record_dict.items()})
-            self.script.dump(summary_dict)
+            self.extra.dump(summary_dict)
 #
 class detector:
     def __init__(self,print_func,call_func):
