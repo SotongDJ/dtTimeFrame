@@ -11,7 +11,7 @@ args = parser.parse_args()
 Tool = libTimeTag.tag()
 Tool.log.name = args.log
 Tool.error.name = args.error
-Tool.json_name = args.json
+Tool.extra.name = args.json
 
 Tool.start()
 
