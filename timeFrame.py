@@ -229,3 +229,14 @@ class paginator:
             self.end_num = (each_num*self.split_number)+group_size
             self.output_dict[each_num] = [self.parent_list[pos_num] for pos_num in range(self.start_num,self.end_num)]
         return self.output_dict
+#
+def dict_sort(inputDict:dict,reverse_bool:bool=False) -> dict:
+    if type(inputDict) == type(dict()):
+        outputDict = {}
+        outputDict.update({n:inputDict[n] for n in sorted(list(inputDict.keys()),reverse=reverse_bool)})
+        for x,y in outputDict.items():
+            if type(y) == type(dict()):
+                outputDict[x] = dict_sort(y)
+        return outputDict
+    else:
+        return inputDict
