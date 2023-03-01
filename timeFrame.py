@@ -6,15 +6,15 @@ import pathlib
 import sys
 import time
 from subprocess import call
-
+from typing import Any
 
 #
 class fileHandle:
-    def __init__(self):
+    def __init__(self) -> None:
         self.name = ""
         self.stat = "init"
         self.alt = None
-    def append(self,word_str):
+    def append(self,word_str:str) -> None:
         if self.name != "":
             with open(self.name,'a') as target_handle:
                 if self.stat != "on":
@@ -22,24 +22,24 @@ class fileHandle:
                         target_handle.write("----------\n")
                     self.stat = "on"
                 target_handle.write(word_str)
-    def handle(self,mode='a'):
+    def handle(self,mode:str='a') -> Any:
         if self.name == "":
             return self.alt
         else:
             self.append("")
             return open(self.name,mode)
-    def clear(self): # clear content
+    def clear(self) -> None: # clear content
         if self.name != "":
             with open(self.name,'w') as target_handle:
                     target_handle.write("")
-    def load(self):
+    def load(self) -> dict:
         return json.load(open(self.name)) if self.name != "" else {}
-    def dump(self,target_dict):
+    def dump(self,target_dict:dict) -> None:
         with open(self.name,"w") as target_handle:
             json.dump(target_dict,target_handle,indent=1)
 #
 class tag:
-    def __init__(self):
+    def __init__(self) -> None:
         #
         self.begin_time_str = ""
         self.delimiter_dict = {"date":"-","join":" ","time":":"}
@@ -54,12 +54,12 @@ class tag:
         # self.json_name = ""
         self.record_dict = dict()
         self.extra = fileHandle()
-    def clearFile(self):
+    def clearFile(self) -> None:
         self.log.clear()
         self.error.clear()
         self.script.clear()
         self.extra.clear()
-    def print(self,word_str,end="\n"):
+    def print(self,word_str:str,end:str="\n") -> None:
         log_list = [self.log,self.error]
         for target in log_list:
             if target.name != "":
@@ -67,7 +67,7 @@ class tag:
                     target_handle.write(word_str+end)
         if self.print_bool:
             print(word_str)
-    def record(self,time_str,content_str,command_str=""):
+    def record(self,time_str:str,content_str:str,command_str:str="") -> None:
         count_int = len(self.record_dict)
         if count_int == 0:
             diff_str = "Initial, 0 s"
@@ -82,29 +82,29 @@ class tag:
         if command_str != "":
             record_entry_dict["cmd"] = command_str
         self.record_dict[count_int] = record_entry_dict
-    def start(self):
+    def start(self) -> None:
         self.begin_time_str = time.strftime("%Y%m%d%H%M%S")
         convert_time_str = self.convertTime(current=self.begin_time_str)
         phrase_str = F"Begin at {convert_time_str}"
         self.print(phrase_str)
         self.record(self.begin_time_str,phrase_str)
-    def timeStamp(self,word_str):
+    def timeStamp(self,word_str:str) -> None:
         current_time_str = time.strftime("%Y%m%d%H%M%S")
         convert_time_str = self.convertTime(current=current_time_str)
         time_msg_str = "[{}] Note: {}".format(convert_time_str,word_str)
         self.print(time_msg_str)
         self.record(current_time_str,time_msg_str)
-    def runCommand(self,word_str,export_file=None,mode="a"):
+    def runCommand(self,word_str:str,export_file:str="",mode:str="a") -> None:
         mode_dict = {"a":" >> ","w":" > "}
         current_time_str = time.strftime("%Y%m%d%H%M%S")
         convert_time_str = self.convertTime(current=current_time_str)
         time_msg_str = "[{}] Run command: {}".format(convert_time_str,word_str)
         self.print(time_msg_str)
         commandList = word_str.split(" ")
-        if export_file:
-            full_command_str = " ".join(commandList)+mode_dict[mode]+F"{export_file}"+"\n"
-        else:
+        if export_file == "":
             full_command_str = " ".join(commandList)+"\n"
+        else:
+            full_command_str = " ".join(commandList)+mode_dict[mode]+F"{export_file}"+"\n"
         self.record(current_time_str,time_msg_str,command_str=full_command_str)
         if "" in commandList:
             self.print("\n[libCommand ERROR MSG] empty command line\n")
@@ -118,11 +118,11 @@ class tag:
         else:
             with self.script.handle() as script_handle:  # type: ignore
                 script_handle.write(full_command_str)
-    def blank(self):
+    def blank(self) -> None:
         self.print("  ")
-    def dash(self):
+    def dash(self) -> None:
         self.print("----------")
-    def getTimeDict(self,input_str):
+    def getTimeDict(self,input_str:str) -> dict:
         time_dict = {
             "year"  : input_str[0:4],
             "month" : input_str[4:6],
@@ -132,7 +132,7 @@ class tag:
             "second": input_str[12:14],
         }
         return time_dict
-    def convertTime(self,current=""):
+    def convertTime(self,current:str="") -> str:
         if current == "":
             current = time.strftime("%Y%m%d%H%M%S")
         current_time_dict = self.getTimeDict(current)
@@ -142,7 +142,7 @@ class tag:
         format_str = "{year}{date}{month}{date}{day}{join}{hour}{time}{minute}{time}{second}"
         converted_msg_str = format_str.format(**current_time_dict)
         return converted_msg_str
-    def measureTime(self,start,stop):
+    def measureTime(self,start:str,stop:str) -> dict:
         int_dict = dict()
         start_date = datetime.datetime.strptime(start,"%Y%m%d%H%M%S")
         stop_date = datetime.datetime.strptime(stop,"%Y%m%d%H%M%S")
@@ -164,7 +164,7 @@ class tag:
             else:
                 int_dict[to_str] = 0
         return int_dict
-    def stop(self):
+    def stop(self) -> None:
         current_time_str = time.strftime("%Y%m%d%H%M%S")
         diff_dict = self.measureTime(self.begin_time_str, current_time_str)
         totalTimeStr = "{day} day {hour} hr {minute} min {second} s".format(**diff_dict)
@@ -182,7 +182,7 @@ class tag:
             self.extra.dump(summary_dict)
 #
 class detector:
-    def __init__(self,print_func,call_func):
+    def __init__(self,print_func:Any,call_func:Any) -> None:
         self.target_str = ""
         self.doing_str = ""
         self.print = print_func
@@ -190,7 +190,7 @@ class detector:
         self.unlink = True
     def func(self,input_str:str) -> None: # self.print and self.call
         print(input_str)
-    def missing(self):
+    def missing(self) -> bool:
         if pathlib.Path(self.target_str).exists():
             self.print(F"NOTE: {self.target_str} existed")
             target_bool = False
@@ -206,15 +206,15 @@ class detector:
             else:
                 target_bool = True
         return target_bool
-    def do(self,target_str):
+    def do(self,target_str:str) -> None:
         self.target_str = target_str
         self.doing_str = "{}/{}".format(pathlib.Path(target_str).parent,"doing-"+pathlib.Path(target_str).name)
-    def done(self):
+    def done(self) -> None:
         self.print(F"NOTE: {self.doing_str} done")
         self.call(F"mv -v {self.doing_str} {self.target_str}")
 #
 class paginator:
-    def __init__(self,input_list:list,split_num=5) -> None:
+    def __init__(self,input_list:list,split_num:int=5) -> None:
         self.parent_list = input_list
         self.parent_count = len(input_list)
         self.split_number = split_num
