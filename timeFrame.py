@@ -88,10 +88,10 @@ class tag:
         phrase_str = F"Begin at {convert_time_str}"
         self.print(phrase_str)
         self.record(self.begin_time_str,phrase_str)
-    def timeStamp(self,word_str:str) -> None:
+    def timeStamp(self,word_str:str,prefix_str:str="[info]") -> None:
         current_time_str = time.strftime("%Y%m%d%H%M%S")
         convert_time_str = self.convertTime(current=current_time_str)
-        time_msg_str = "[{}] Note: {}".format(convert_time_str,word_str)
+        time_msg_str = "[{}] {} {}".format(convert_time_str,prefix_str,word_str)
         self.print(time_msg_str)
         self.record(current_time_str,time_msg_str)
     def runCommand(self,word_str:str,export_file:str="",mode:str="a") -> None:
