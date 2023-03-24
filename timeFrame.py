@@ -94,7 +94,7 @@ class tag:
         time_msg_str = "[{}] {} {}".format(convert_time_str,prefix_str,word_str)
         self.print(time_msg_str)
         self.record(current_time_str,time_msg_str)
-    def runCommand(self,word_str:str,export_file:str="",mode:str="a") -> None:
+    def runCommand(self,word_str:str,export_file:str="",mode:str="a",direct_out=False) -> None:
         mode_dict = {"a":" >> ","w":" > "}
         current_time_str = time.strftime("%Y%m%d%H%M%S")
         convert_time_str = self.convertTime(current=current_time_str)
@@ -110,14 +110,17 @@ class tag:
             self.print("\n[libCommand ERROR MSG] empty command line\n")
         if export_file:
             self.print(F"    Output file: {export_file}")
-        if self.script.name == "":
-            if export_file:
-                call(commandList, stdout=open(export_file,mode),stderr=self.error.handle())
-            else:
-                call(commandList, stdout=self.log.handle(),stderr=self.error.handle())
+        if direct_out:
+            call(commandList, stdout=sys.stdout,stderr=sys.stderr)
         else:
-            with self.script.handle() as script_handle:  # type: ignore
-                script_handle.write(full_command_str)
+            if self.script.name == "":
+                if export_file:
+                    call(commandList, stdout=open(export_file,mode),stderr=self.error.handle())
+                else:
+                    call(commandList, stdout=self.log.handle(),stderr=self.error.handle())
+            else:
+                with self.script.handle() as script_handle:  # type: ignore
+                    script_handle.write(full_command_str)
     def blank(self) -> None:
         self.print("  ")
     def dash(self) -> None:
