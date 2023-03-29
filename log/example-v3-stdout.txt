@@ -1,3 +1,0 @@
-something into log/example-v3-stdout.txt
-Turn off shell script export
-something into log/example-v3-stdout.txt but not example.sh

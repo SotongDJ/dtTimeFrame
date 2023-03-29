@@ -2,22 +2,12 @@
 
 dtTimeFrame is a module that pack **time track functions** and **subprocess call functions** into one single class.
 
-## Setup
+- Homepage: <https://github.com/SotongDJ/dtTimeFrame>
 
-``` bash
-git submodule add https://github.com/SotongDJ/dtTimeFrame.git dtTimeFrame
-git submodule set-branch --branch main dtTimeFrame
-git submodule update --init --recursive
-git submodule update --remote --merge
-```
+## Install dtTimeFrame
 
-## Setup for v2
-
-``` bash
-git submodule add https://github.com/SotongDJ/dtTimeFrame.git dtTimeFrame
-git submodule set-branch --branch v2 dtTimeFrame
-git submodule update --init --recursive
-git submodule update --remote --merge
+```bash
+pip install dttimeframe
 ```
 
 ## Example codes
@@ -27,7 +17,7 @@ git submodule update --remote --merge
 from dtTimeFrame import timeFrame as timeframe # type: ignore
 
 # Initiation
-Tool = libTimeTag.tag()
+Tool = timeframe.tag()
 Tool.log.name = "log.txt" # filename of the log file, store stdout info
 Tool.error.name = "err.txt" # filename of the err file, store stderr info
 Tool.extra.name = "log.json" # filename of the extra command record, store time stamp, commands and others info
@@ -53,5 +43,3 @@ Tool.runCommand(phrase_str,export_file="test.txt")
 # end logging and write footer into log/err files 
 Tool.stop()
 ```
-
-- more usage can refer `example-v3.py`
