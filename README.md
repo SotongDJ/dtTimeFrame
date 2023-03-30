@@ -12,12 +12,13 @@ pip install dttimeframe
 
 ## Example codes
 
+### tag()
+
 ```python
-# import submodule
-from dtTimeFrame import timeFrame as timeframe # type: ignore
+from dtTimeFrame.timeFrame import tag # type: ignore
 
 # Initiation
-Tool = timeframe.tag()
+Tool = tag()
 Tool.log.name = "log.txt" # filename of the log file, store stdout info
 Tool.error.name = "err.txt" # filename of the err file, store stderr info
 Tool.extra.name = "log.json" # filename of the extra command record, store time stamp, commands and others info
@@ -42,4 +43,21 @@ Tool.runCommand(phrase_str,export_file="test.txt")
 
 # end logging and write footer into log/err files 
 Tool.stop()
+```
+
+### detector()
+
+```python
+from dtTimeFrame.timeFrame import detector # type: ignore
+
+file_be_process_handle = detector(print_func=print,call_func=print)
+# "file_be_process_handle = detector(print_func=Tool.timeStamp,call_func=Tool.runCommand)"
+# combine use with tag() 
+file_be_process_handle.do(target_str="target.txt")
+if file_be_process_handle.missing(): # if target.txt missing?
+    with open(file_be_process_handle.doing_str,"w") as target_handle: # doing-target.txt
+        target_handle.write("Hello world\n")
+    file_be_process_handle.done() # rename doing-target.txt as target.txt
+
+print(open(file_be_process_handle.target_str).read())
 ```
