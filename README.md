@@ -45,7 +45,7 @@ Tool.runCommand(phrase_str,export_file="test.txt")
 Tool.stop()
 ```
 
-### tag()
+### detector()
 
 ```python
 from dtTimeFrame.timeFrame import detector # type: ignore
