@@ -2,9 +2,9 @@
 import datetime
 import json
 import math
-import pathlib
 import sys
 import time
+from pathlib import Path
 from subprocess import call
 from typing import Any
 
@@ -180,9 +180,12 @@ class tag:
             summary_dict = {}
             if pathlib.Path(self.extra.name).exists():
                 summary_dict.update(self.extra.load())
-            entry_prefix_str = "[{}] ".format(len(summary_dict))
-            summary_dict.update({F"{entry_prefix_str}{x}":y for x,y in self.record_dict.items()})
-            self.extra.dump(summary_dict)
+    def indicator(self,input_str:str) -> bool:
+        if Path("stop.txt").exists():
+            self.timeStamp(F"Manually skip, as 'stop.txt' existed, at [{input_str}]")
+        else:
+            self.timeStamp(F"{input_str}")
+        return not Path("stop.txt").exists()
 #
 class detector:
     def __init__(self,print_func:Any,call_func:Any) -> None:
@@ -194,13 +197,13 @@ class detector:
     def func(self,input_str:str) -> None: # self.print and self.call
         print(input_str)
     def missing(self) -> bool:
-        if pathlib.Path(self.target_str).exists():
+        if Path(self.target_str).exists():
             self.print(F"NOTE: {self.target_str} existed")
             target_bool = False
         else:
-            if pathlib.Path(self.doing_str).exists():
+            if Path(self.doing_str).exists():
                 if self.unlink:
-                    pathlib.Path(self.doing_str).unlink()
+                    Path(self.doing_str).unlink()
                     self.print(F"NOTE: {self.doing_str} removed")
                     target_bool = True
                 else:
@@ -211,7 +214,7 @@ class detector:
         return target_bool
     def do(self,target_str:str) -> None:
         self.target_str = target_str
-        self.doing_str = "{}/{}".format(pathlib.Path(target_str).parent,"doing-"+pathlib.Path(target_str).name)
+        self.doing_str = "{}/{}".format(Path(target_str).parent,"doing-"+Path(target_str).name)
     def done(self) -> None:
         self.print(F"NOTE: {self.doing_str} done")
         self.call(F"mv -v {self.doing_str} {self.target_str}")
