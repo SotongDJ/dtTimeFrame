@@ -196,14 +196,14 @@ class tag:
         return not Path("stop.txt").exists()
 #
 class detector:
-    def __init__(self,print_func:Any,call_func:Any) -> None:
+    def __init__(self,print_func:Any=print,call_func:Any=print,target_str:str="") -> None:
         self.target_str = ""
         self.doing_str = ""
         self.print = print_func
         self.call = call_func
         self.unlink = True
-    def func(self,input_str:str) -> None: # self.print and self.call
-        print(input_str)
+        if target_str != "":
+            self.do(target_str)
     def missing(self) -> bool:
         if Path(self.target_str).exists():
             self.print(F"NOTE: {self.target_str} existed")
