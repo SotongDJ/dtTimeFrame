@@ -32,11 +32,17 @@ class fileHandle:
         if self.name != "":
             with open(self.name,'w') as target_handle:
                     target_handle.write("")
+class recordHandle(fileHandle):
+    def __init__(self, handle:Any=json) -> None:
+        self.name = ""
+        self.stat = "init"
+        self.alt = None
+        self.handle = handle
     def load(self) -> dict:
-        return json.load(open(self.name)) if self.name != "" else {}
+        return self.handle.load(open(self.name)) if self.name != "" else {}
     def dump(self,target_dict:dict) -> None:
         with open(self.name,"w") as target_handle:
-            json.dump(target_dict,target_handle,indent=1)
+            self.handle.dump(target_dict,target_handle)
 #
 class tag:
     def __init__(self) -> None:
@@ -53,7 +59,7 @@ class tag:
         #
         # self.json_name = ""
         self.record_dict = dict()
-        self.extra = fileHandle()
+        self.extra = recordHandle()
     def clearFile(self) -> None:
         self.log.clear()
         self.error.clear()
