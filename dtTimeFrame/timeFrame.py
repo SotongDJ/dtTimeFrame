@@ -187,7 +187,9 @@ class tag:
             if Path(self.extra.name).exists():
                 summary_dict.update(self.extra.load())
             summary_dict.update({str(len(summary_dict)+x):y for x,y in self.record_dict.items()})
-            self.extra.dump(dict_sort(summary_dict))
+            len_len_int = len(str(len(summary_dict)))
+            correct_dict = {((len_len_int-len(str(x)))*"0")+x:y for x,y in summary_dict.items()}
+            self.extra.dump(dict_sort(correct_dict))
     def checkPoint(self,input_str:str) -> bool:
         if Path("stop.txt").exists():
             self.timeStamp(F"Manually skip, as 'stop.txt' existed, at [{input_str}]")
