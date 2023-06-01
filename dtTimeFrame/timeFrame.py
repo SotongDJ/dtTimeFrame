@@ -2,9 +2,9 @@
 import datetime
 import json
 import math
-import pathlib
 import sys
 import time
+from pathlib import Path
 from subprocess import call
 from typing import Any
 
@@ -32,11 +32,17 @@ class fileHandle:
         if self.name != "":
             with open(self.name,'w') as target_handle:
                     target_handle.write("")
+class recordHandle(fileHandle):
+    def __init__(self, handle:Any=json) -> None:
+        self.name = ""
+        self.stat = "init"
+        self.alt = None
+        self.handle = handle
     def load(self) -> dict:
-        return json.load(open(self.name)) if self.name != "" else {}
+        return self.handle.load(open(self.name)) if self.name != "" else {}
     def dump(self,target_dict:dict) -> None:
         with open(self.name,"w") as target_handle:
-            json.dump(target_dict,target_handle,indent=1)
+            self.handle.dump(target_dict,target_handle)
 #
 class tag:
     def __init__(self) -> None:
@@ -53,7 +59,7 @@ class tag:
         #
         # self.json_name = ""
         self.record_dict = dict()
-        self.extra = fileHandle()
+        self.extra = recordHandle()
     def clearFile(self) -> None:
         self.log.clear()
         self.error.clear()
@@ -178,29 +184,34 @@ class tag:
         self.record(current_time_str,phrase_str)
         if self.extra.name != "":
             summary_dict = {}
-            if pathlib.Path(self.extra.name).exists():
+            if Path(self.extra.name).exists():
                 summary_dict.update(self.extra.load())
-            entry_prefix_str = "[{}] ".format(len(summary_dict))
-            summary_dict.update({F"{entry_prefix_str}{x}":y for x,y in self.record_dict.items()})
-            self.extra.dump(summary_dict)
+            summary_dict.update({str(len(summary_dict)+x):y for x,y in self.record_dict.items()})
+            self.extra.dump(dict_sort(summary_dict))
+    def checkPoint(self,input_str:str) -> bool:
+        if Path("stop.txt").exists():
+            self.timeStamp(F"Manually skip, as 'stop.txt' existed, at [{input_str}]")
+        else:
+            self.timeStamp(F"{input_str}")
+        return not Path("stop.txt").exists()
 #
 class detector:
-    def __init__(self,print_func:Any,call_func:Any) -> None:
+    def __init__(self,print_func:Any=print,call_func:Any=print,target_str:str="") -> None:
         self.target_str = ""
         self.doing_str = ""
         self.print = print_func
         self.call = call_func
         self.unlink = True
-    def func(self,input_str:str) -> None: # self.print and self.call
-        print(input_str)
+        if target_str != "":
+            self.do(target_str)
     def missing(self) -> bool:
-        if pathlib.Path(self.target_str).exists():
+        if Path(self.target_str).exists():
             self.print(F"NOTE: {self.target_str} existed")
             target_bool = False
         else:
-            if pathlib.Path(self.doing_str).exists():
+            if Path(self.doing_str).exists():
                 if self.unlink:
-                    pathlib.Path(self.doing_str).unlink()
+                    Path(self.doing_str).unlink()
                     self.print(F"NOTE: {self.doing_str} removed")
                     target_bool = True
                 else:
@@ -211,7 +222,7 @@ class detector:
         return target_bool
     def do(self,target_str:str) -> None:
         self.target_str = target_str
-        self.doing_str = "{}/{}".format(pathlib.Path(target_str).parent,"doing-"+pathlib.Path(target_str).name)
+        self.doing_str = "{}/{}".format(Path(target_str).parent,"doing-"+Path(target_str).name)
     def done(self) -> None:
         self.print(F"NOTE: {self.doing_str} done")
         self.call(F"mv -v {self.doing_str} {self.target_str}")

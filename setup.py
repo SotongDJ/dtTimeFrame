@@ -2,7 +2,7 @@ import setuptools
 
 setuptools.setup(
     name = "dttimeframe",
-    version = "3.6.1",
+    version = "3.6.5",
     author = "David Soh",
     author_email = "ln@trth.nl",
     description = "dtTimeFrame is a module that pack time track functions and subprocess call functions into one single class.",
